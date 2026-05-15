@@ -1,0 +1,141 @@
+{
+  "_comment": "Configuración de despliegue para ACRUX.life + DIGITAL-H",
+  "_note": "DIGITAL-H está ANIDADO dentro de ACRUX.life: domains/acrux.life/public_html/digital-h/",
+  "_warning": "El despliegue de ACRUX.life puede afectar DIGITAL-H si no se configuran exclusiones correctamente",
+  
+  "projects": {
+    "acrux": {
+      "name": "ACRUX.life",
+      "localPath": "/home/foxnet360/Documentos/dev/acrux.life",
+      "remoteHost": "acrux",
+      "remotePath": "domains/acrux.life/public_html",
+      "buildCommand": "npm run build",
+      "distPath": "dist",
+      "backendPaths": [
+        "public/api",
+        "database"
+      ],
+      "htaccessPath": "public/.htaccess",
+      "_nestedProjects": ["digital-h"]
+    },
+    "digital-h": {
+      "name": "DIGITAL-H",
+      "localPath": "/home/foxnet360/Documentos/dev/DIGITAL-H",
+      "remoteHost": "acrux",
+      "remotePath": "domains/acrux.life/public_html/digital-h",
+      "buildCommand": "npm run build",
+      "distPath": "dist",
+      "backendPaths": [
+        "public/api"
+      ],
+      "htaccessPath": "public/.htaccess",
+      "_parentProject": "acrux",
+      "_isNested": true
+    }
+  },
+  
+  "calculadora": {
+    "name": "Calculadora ROI",
+    "localPath": "/home/foxnet360/Documentos/dev/acrux-calculadora",
+    "remoteHost": "acrux",
+    "remotePath": "domains/acrux.life/public_html/calculadora",
+    "buildCommand": "npm run build",
+    "distPath": "dist",
+    "backendPaths": [],
+    "_parentProject": "acrux",
+    "_isNested": true
+  },
+  
+  "_templateNewProject": {
+    "_comment": "Para agregar una nueva herramienta, copia este template y ajusta los valores",
+    "_example": {
+      "nombre-herramienta": {
+        "name": "Nombre Herramienta",
+        "localPath": "/home/foxnet360/Documentos/dev/acrux-[nombre-herramienta]",
+        "remoteHost": "acrux",
+        "remotePath": "domains/acrux.life/public_html/[nombre-herramienta]",
+        "buildCommand": "npm run build",
+        "distPath": "dist",
+        "backendPaths": [],
+        "_parentProject": "acrux",
+        "_isNested": true
+      }
+    }
+  },
+  
+  "deployment": {
+    "backupPrefix": "backup",
+    "backupKeepCount": 5,
+    "rsyncOptions": "-avz --delete",
+    "protection": {
+      "_note": "Configuración de protección para proyectos anidados",
+      "digital-h": {
+        "protectedPaths": ["digital-h/"],
+        "protectionStrategy": "pre-deploy-backup",
+        "autoRestore": true,
+        "rsyncFilter": "protect digital-h/"
+      }
+    },
+    "excludeFromAcrux": [
+      {
+        "path": "digital-h/",
+        "reason": "DIGITAL-H es un proyecto separado anidado dentro de ACRUX.life",
+        "protection": "both"
+      },
+      {
+        "path": "api/",
+        "reason": "Backend PHP de ACRUX - solo desplegar con --with-backend",
+        "protection": "exclude-only"
+      },
+      {
+        "path": "database/",
+        "reason": "Base de datos - solo desplegar con --with-backend",
+        "protection": "exclude-only"
+      }
+    ],
+    "_note": "Para agregar nuevas herramientas, añadir a excludeFromAcrux y a projects"
+  },
+  
+  "verification": {
+    "baseUrl": "https://acrux.life",
+    "endpoints": {
+      "home": {
+        "url": "/",
+        "method": "GET",
+        "expectedStatus": 200
+      },
+      "digitalh": {
+        "url": "/digital-h/",
+        "method": "GET",
+        "expectedStatus": 200,
+        "_note": "DIGITAL-H está anidado en /digital-h/ dentro de ACRUX.life"
+      },
+      "contact": {
+        "url": "/api/contact.php",
+        "method": "POST",
+        "headers": "Content-Type: application/json",
+        "body": "{\"name\":\"DeployTest\",\"email\":\"deploy@test.acrux\",\"service\":\"test\",\"message\":\"deployment verification\"}",
+        "expectedStatus": 200
+      },
+      "subscribe": {
+        "url": "/api/subscribe.php",
+        "method": "POST",
+        "headers": "Content-Type: application/json",
+        "body": "{\"email\":\"deploy@test.acrux\",\"source\":\"deploy-verification\"}",
+        "expectedStatus": 200
+      },
+      "digitalhHealth": {
+        "url": "/digital-h/api/health.php",
+        "method": "GET",
+        "expectedStatus": 200
+      },
+      "digitalhDiagnostic": {
+        "url": "/digital-h/api/diagnostic.php",
+        "method": "POST",
+        "headers": "Content-Type: application/json",
+        "body": "{\"name\":\"DeployTest\",\"email\":\"deploy@test.acrux\",\"company\":\"Test\",\"answers\":{},\"score\":50,\"maturityLevel\":\"inicial\",\"consent\":true}",
+        "expectedStatus": 200
+      }
+    }
+  }
+}
