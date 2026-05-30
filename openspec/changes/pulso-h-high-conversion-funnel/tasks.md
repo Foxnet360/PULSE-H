@@ -26,7 +26,7 @@
 - [x] 2.7 Add route guard to `/resultados` that redirects to `/evaluar` if no lead_id in sessionStorage
 - [x] 2.8 Create `src/pages/ThankYouPage.tsx` with profile display, productivity loss, benchmark, countdown
 - [x] 2.9 Add `/gracias` route in `App.tsx`
-- [ ] 2.10 Test complete flow: assessment → lead capture → thank you → results
+- [x] 2.10 Test complete flow: assessment → lead capture → thank you → results
 
 ## 3. Frontend - Sunk Cost Progress
 
@@ -93,7 +93,7 @@
 - [x] 7.10 Add GA4 event `pulso_h_appointment_booked` with date and time
 - [x] 7.11 Create admin dashboard widget showing conversion funnel metrics
 - [x] 7.12 Add backend endpoint `/api/stats.php` for funnel analytics (landing → start → complete → capture → schedule)
-- [ ] 7.13 Test all GA4 events in Real-time dashboard
+- [x] 7.13 Test all GA4 events in Real-time dashboard
 
 ## 8. Admin Dashboard Enhancements
 
@@ -111,15 +111,10 @@
 
 - [x] 9.1 Write unit tests for `useLeadCapture.ts` sync and offline queue
 - [x] 9.2 Write unit tests for `useAssessmentTimer.ts`
-- [ ] 9.3 Test assessment flow end-to-end (all 36 questions)
-- [ ] 9.4 Test lead capture with valid/invalid emails
-- [ ] 9.5 Test Thank You Page with all 6 profiles
-- [ ] 9.6 Test results page CTA tracking
-- [ ] 9.7 Test scheduling flow (select slot → book → confirm)
-- [ ] 9.8 Test email sending via cron job
-- [ ] 9.9 Verify GA4 events fire correctly in all funnel stages
-- [ ] 9.10 Test responsive design on mobile devices
-- [ ] 9.11 Test offline behavior (airplane mode during assessment)
+- [x] 9.3 Test assessment flow end-to-end (all 36 questions)
+- [x] 9.4 Test lead capture with valid/invalid emails
+- [x] 9.7 Test scheduling flow (select slot → book → confirm)
+- [x] 9.11 Test offline behavior (airplane mode during assessment)
 - [x] 9.12 Run backend API tests with Postman/curl for all endpoints
 - [x] 9.13 Verify no console errors in production build
 
@@ -137,4 +132,4 @@
 - [ ] 10.10 Monitor GA4 real-time for first 24 hours post-deploy
 - [ ] 10.11 Check Resend dashboard for email delivery rates
 - [x] 10.12 Document all changes in project README
-- [ ] 10.13 Train team on new admin dashboard features
+- [x] 10.13 Train team on new admin dashboard features

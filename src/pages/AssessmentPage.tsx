@@ -27,6 +27,7 @@ const AssessmentPage: React.FC = () => {
 
   const [hasStarted, setHasStarted] = useState(false)
   const [consentGiven, setConsentGiven] = useState(false)
+  const [gdprConsent, setGdprConsent] = useState(false)
   const [showLeadCapture, setShowLeadCapture] = useState(false)
   const [assessmentResult, setAssessmentResult] = useState<any>(null)
   const [showToast, setShowToast] = useState<string | null>(null)
@@ -41,7 +42,7 @@ const AssessmentPage: React.FC = () => {
   }, [])
 
   const handleStart = () => {
-    if (!consentGiven) return
+    if (!consentGiven || !gdprConsent) return
     setHasStarted(true)
     startTimer()
     trackAssessmentStart()
@@ -250,6 +251,8 @@ const AssessmentPage: React.FC = () => {
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
+                checked={gdprConsent}
+                onChange={(e) => setGdprConsent(e.target.checked)}
                 className="mt-1 w-5 h-5 text-accent border-primary-300 rounded focus:ring-accent"
               />
               <span className="text-sm text-primary-700">
@@ -271,10 +274,17 @@ const AssessmentPage: React.FC = () => {
               </span>
             </label>
 
+            {(!consentGiven || !gdprConsent) && (
+              <p className="mt-3 text-sm text-amber-600 flex items-center gap-2">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500" />
+                Debes aceptar ambos consentimientos para continuar
+              </p>
+            )}
+
             <button
               onClick={handleStart}
-              disabled={!consentGiven}
-              className="w-full mt-6 px-8 py-4 bg-accent text-white font-semibold rounded-xl hover:bg-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              disabled={!consentGiven || !gdprConsent}
+              className="w-full mt-4 px-8 py-4 bg-accent text-white font-semibold rounded-xl hover:bg-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               Comenzar evaluación
               <ArrowRight className="w-5 h-5" />

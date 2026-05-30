@@ -6,23 +6,23 @@
 
 # Test info
 
-- Name: pulso-h.spec.ts >> PULSO-H E2E Tests >> 9.6 - Results Page CTA tracking
-- Location: e2e/pulso-h.spec.ts:197:3
+- Name: pulso-h.spec.ts >> PULSO-H E2E Tests >> 9.5 - Thank You Page with all 6 profiles
+- Location: e2e/pulso-h.spec.ts:156:3
 
 # Error details
 
 ```
 Error: expect(locator).toBeVisible() failed
 
-Locator: locator('text=Resultados')
+Locator: locator('text=sobrecargadx')
 Expected: visible
-Error: strict mode violation: locator('text=Resultados') resolved to 2 elements:
-    1) <h1 class="font-display text-2xl font-bold text-primary-900 mb-4">No hay resultados disponibles</h1> aka getByRole('heading', { name: 'No hay resultados disponibles' })
-    2) <p class="text-primary-700 mb-6">Completa la evaluación para ver tus resultados.</p> aka getByText('Completa la evaluación para')
+Error: strict mode violation: locator('text=sobrecargadx') resolved to 2 elements:
+    1) <div class="inline-block px-4 py-2 rounded-full text-white text-sm font-bold mb-4">sobrecargadx</div> aka getByText('sobrecargadx', { exact: true })
+    2) <h1 class="font-display text-3xl font-bold text-primary-900 mb-4">Perfil de prueba: sobrecargadx</h1> aka getByRole('heading', { name: 'Perfil de prueba: sobrecargadx' })
 
 Call log:
   - Expect "toBeVisible" with timeout 5000ms
-  - waiting for locator('text=Resultados')
+  - waiting for locator('text=sobrecargadx')
 
 ```
 
@@ -45,129 +45,135 @@ Call log:
   - main [ref=e16]:
     - generic [ref=e18]:
       - generic [ref=e19]:
-        - generic [ref=e20]: equilibradx
-        - heading "Estás en equilibrio" [level=1] [ref=e21]
-        - paragraph [ref=e22]: Tu pulso indica que estás en un momento de equilibradx. Esto no es un veredicto, es una invitación.
-      - generic [ref=e23]:
-        - heading "Índice de Riesgo Psicosocial" [level=2] [ref=e24]
-        - generic [ref=e26]:
-          - img [ref=e27]
-          - generic [ref=e30]:
-            - generic [ref=e31]: "45"
-            - generic [ref=e32]: Riesgo Moderado
-        - paragraph
-      - heading "Dimensiones Evaluadas" [level=2] [ref=e34]
-      - generic [ref=e35]:
-        - heading "Plan de Acción Personalizado" [level=2] [ref=e36]
-        - generic [ref=e37]:
-          - button "Acción Inmediata Respiración 4-7-8" [ref=e39]:
-            - generic [ref=e40]:
-              - generic [ref=e41]: Acción Inmediata
-              - generic [ref=e42]: Respiración 4-7-8
-            - img [ref=e43]
-          - button "Acción Corto Plazo Micro-pausas Estructuradas" [ref=e46]:
-            - generic [ref=e47]:
-              - generic [ref=e48]: Acción Corto Plazo
-              - generic [ref=e49]: Micro-pausas Estructuradas
-            - img [ref=e50]
-          - button "Acción Medio Plazo Job Crafting Personal" [ref=e53]:
-            - generic [ref=e54]:
-              - generic [ref=e55]: Acción Medio Plazo
-              - generic [ref=e56]: Job Crafting Personal
-            - img [ref=e57]
-      - generic [ref=e59]:
-        - heading "¿Quieres profundizar en tus resultados?" [level=2] [ref=e60]
-        - generic [ref=e61]:
-          - link "Agendar consultoría 30 minutos gratuitos para interpretar tus resultados de bienestar. Agendar ahora" [ref=e62] [cursor=pointer]:
-            - /url: https://calendly.com/acrux-consultores/30min
-            - img [ref=e64]
-            - heading "Agendar consultoría" [level=3] [ref=e66]
-            - paragraph [ref=e67]: 30 minutos gratuitos para interpretar tus resultados de bienestar.
-            - generic [ref=e68]:
-              - text: Agendar ahora
-              - img [ref=e69]
-          - link "Ver soluciones Conoce cómo ayudamos a mejorar el bienestar de equipos como el tuyo. Explorar" [ref=e71] [cursor=pointer]:
-            - /url: https://acrux.life/soluciones
-            - img [ref=e73]
-            - heading "Ver soluciones" [level=3] [ref=e76]
-            - paragraph [ref=e77]: Conoce cómo ayudamos a mejorar el bienestar de equipos como el tuyo.
-            - generic [ref=e78]:
-              - text: Explorar
-              - img [ref=e79]
-          - button "Descargar informe Obtén tu reporte completo en PDF para compartir con tu equipo. Descargar" [ref=e81]:
-            - img [ref=e83]
-            - heading "Descargar informe" [level=3] [ref=e86]
-            - paragraph [ref=e87]: Obtén tu reporte completo en PDF para compartir con tu equipo.
-            - generic [ref=e88]:
-              - text: Descargar
-              - img [ref=e89]
-  - contentinfo [ref=e91]:
-    - generic [ref=e92]:
-      - generic [ref=e93]:
-        - generic [ref=e94]:
-          - link "Acrux Consultores" [ref=e95] [cursor=pointer]:
+        - generic [ref=e20]: sobrecargadx
+        - 'heading "Perfil de prueba: sobrecargadx" [level=1] [ref=e21]'
+        - generic [ref=e22]:
+          - generic [ref=e23]: "72"
+          - generic [ref=e24]: /100 Riesgo Alto
+      - generic [ref=e26]:
+        - img [ref=e27]
+        - generic [ref=e29]:
+          - heading "⚠️ Pérdida de Productividad" [level=2] [ref=e30]
+          - paragraph [ref=e31]:
+            - text: Con un IRP de 72, estás perdiendo aproximadamente
+            - strong [ref=e32]: 9 horas semanales
+            - text: de productividad por agotamiento emocional.
+          - paragraph [ref=e33]: Tu equipo muestra signos de agotamiento que requieren atención.
+      - paragraph [ref=e35]:
+        - strong [ref=e36]: El 73% de empresas en tu sector tienen mejor bienestar laboral
+        - text: . Las empresas que invierten en bienestar laboral ven un retorno de $4 por cada $1 invertido.
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - img [ref=e39]
+          - generic [ref=e42]: "Oferta de diagnóstico válida por:"
+        - generic [ref=e43]: 47:59:59
+        - paragraph [ref=e44]: Después de este tiempo, tu informe expirará y necesitarás completar la evaluación de nuevo.
+      - generic [ref=e45]:
+        - button "Agendar mi revisión gratuita de 30 min" [ref=e46]:
+          - img [ref=e47]
+          - text: Agendar mi revisión gratuita de 30 min
+          - img [ref=e49]
+        - button "Ver mi informe completo" [ref=e51]:
+          - img [ref=e52]
+          - text: Ver mi informe completo
+  - contentinfo [ref=e55]:
+    - generic [ref=e56]:
+      - generic [ref=e57]:
+        - generic [ref=e58]:
+          - link "Acrux Consultores" [ref=e59] [cursor=pointer]:
             - /url: https://acrux.life
-            - generic [ref=e96]: Acrux Consultores
-          - paragraph [ref=e97]: Parte de ACRUX Consultores
-          - paragraph [ref=e98]: Arquitectos de Sistemas Humanos
-        - generic [ref=e99]:
-          - heading "PULSO-H" [level=4] [ref=e100]
-          - list [ref=e101]:
-            - listitem [ref=e102]:
-              - link "Inicio" [ref=e103] [cursor=pointer]:
+            - generic [ref=e60]: Acrux Consultores
+          - paragraph [ref=e61]: Parte de ACRUX Consultores
+          - paragraph [ref=e62]: Arquitectos de Sistemas Humanos
+        - generic [ref=e63]:
+          - heading "PULSO-H" [level=4] [ref=e64]
+          - list [ref=e65]:
+            - listitem [ref=e66]:
+              - link "Inicio" [ref=e67] [cursor=pointer]:
                 - /url: /
-            - listitem [ref=e104]:
-              - link "Evaluar bienestar" [ref=e105] [cursor=pointer]:
+            - listitem [ref=e68]:
+              - link "Evaluar bienestar" [ref=e69] [cursor=pointer]:
                 - /url: /evaluar
-            - listitem [ref=e106]:
-              - link "Nuestros servicios" [ref=e107] [cursor=pointer]:
+            - listitem [ref=e70]:
+              - link "Nuestros servicios" [ref=e71] [cursor=pointer]:
                 - /url: https://acrux.life/soluciones
-        - generic [ref=e108]:
-          - heading "Legal" [level=4] [ref=e109]
-          - list [ref=e110]:
-            - listitem [ref=e111]:
-              - link "Política de Privacidad" [ref=e112] [cursor=pointer]:
+        - generic [ref=e72]:
+          - heading "Legal" [level=4] [ref=e73]
+          - list [ref=e74]:
+            - listitem [ref=e75]:
+              - link "Política de Privacidad" [ref=e76] [cursor=pointer]:
                 - /url: https://acrux.life/privacidad
-            - listitem [ref=e113]:
-              - link "Términos y Condiciones" [ref=e114] [cursor=pointer]:
+            - listitem [ref=e77]:
+              - link "Términos y Condiciones" [ref=e78] [cursor=pointer]:
                 - /url: https://acrux.life/terminos
-            - listitem [ref=e115]:
-              - link "Política de Cookies" [ref=e116] [cursor=pointer]:
+            - listitem [ref=e79]:
+              - link "Política de Cookies" [ref=e80] [cursor=pointer]:
                 - /url: https://acrux.life/cookies
-        - generic [ref=e117]:
-          - heading "Confianza" [level=4] [ref=e118]
-          - list [ref=e119]:
-            - listitem [ref=e120]:
-              - img [ref=e121]
+        - generic [ref=e81]:
+          - heading "Confianza" [level=4] [ref=e82]
+          - list [ref=e83]:
+            - listitem [ref=e84]:
+              - img [ref=e85]
               - text: Datos encriptados
-            - listitem [ref=e123]:
-              - img [ref=e124]
+            - listitem [ref=e87]:
+              - img [ref=e88]
               - text: GDPR compliant
-            - listitem [ref=e127]:
-              - img [ref=e128]
+            - listitem [ref=e91]:
+              - img [ref=e92]
               - text: ISTAS-21 validado
-      - paragraph [ref=e132]: © 2026 ACRUX Consultores. Todos los derechos reservados.
-  - generic [ref=e135]:
-    - generic [ref=e136]:
-      - img [ref=e138]
-      - generic [ref=e140]:
-        - paragraph [ref=e141]:
-          - strong [ref=e142]: Tu privacidad importa
+      - paragraph [ref=e96]: © 2026 ACRUX Consultores. Todos los derechos reservados.
+  - generic [ref=e99]:
+    - generic [ref=e100]:
+      - img [ref=e102]
+      - generic [ref=e104]:
+        - paragraph [ref=e105]:
+          - strong [ref=e106]: Tu privacidad importa
           - text: — Utilizamos cookies esenciales para el funcionamiento del sitio y cookies analíticas para mejorar tu experiencia.
-        - link "Más información" [ref=e143] [cursor=pointer]:
+        - link "Más información" [ref=e107] [cursor=pointer]:
           - /url: /privacidad
           - text: Más información
-          - img [ref=e144]
-    - generic [ref=e146]:
-      - button "Solo esenciales" [ref=e147]
-      - button "Aceptar todas" [ref=e148]
-      - button "Cerrar" [ref=e149]:
-        - img [ref=e150]
+          - img [ref=e108]
+    - generic [ref=e110]:
+      - button "Solo esenciales" [ref=e111]
+      - button "Aceptar todas" [ref=e112]
+      - button "Cerrar" [ref=e113]:
+        - img [ref=e114]
 ```
 
 # Test source
 
 ```ts
+  85  |   test('9.4 - Lead capture with invalid email shows error', async ({ page }) => {
+  86  |     test.setTimeout(120000)
+  87  |     
+  88  |     await navigate(page, '/evaluar')
+  89  |     
+  90  |     // Complete assessment quickly
+  91  |     await page.check('input[type="checkbox"]')
+  92  |     await page.click('button:has-text("Comenzar evaluación")')
+  93  |     
+  94  |     for (let moduleIndex = 0; moduleIndex < 6; moduleIndex++) {
+  95  |       const sliders = await page.locator('input[type="range"]').all()
+  96  |       for (const slider of sliders) {
+  97  |         await slider.evaluate(el => {
+  98  |           (el as HTMLInputElement).value = '3'
+  99  |           el.dispatchEvent(new Event('change', { bubbles: true }))
+  100 |         })
+  101 |       }
+  102 |       const nextButton = page.locator('button:has-text("Siguiente"), button:has-text("Finalizar")')
+  103 |       await nextButton.click()
+  104 |       await page.waitForTimeout(300)
+  105 |     }
+  106 |     
+  107 |     // Try invalid email
+  108 |     await page.fill('input[type="email"]', 'invalid-email')
+  109 |     await page.check('input[name="gdpr_consent"]')
+  110 |     await page.click('button[type="submit"]')
+  111 |     
+  112 |     // Should show validation error (either HTML5 or custom)
+  113 |     const errorVisible = await page.locator('text=/email no válido|valid email|formato/i').isVisible().catch(() => false)
+  114 |     const inputInvalid = await page.locator('input[type="email"]:invalid').count() > 0
+  115 |     
   116 |     expect(errorVisible || inputInvalid).toBeTruthy()
   117 |     
   118 |     console.log('✓ Lead capture with invalid email shows error')
@@ -237,7 +243,8 @@ Call log:
   182 |       await page.waitForLoadState('networkidle')
   183 |       
   184 |       // Verify profile name is displayed
-  185 |       await expect(page.locator(`text=${profile.name}`)).toBeVisible()
+> 185 |       await expect(page.locator(`text=${profile.name}`)).toBeVisible()
+      |                                                          ^ Error: expect(locator).toBeVisible() failed
   186 |       
   187 |       // Verify productivity loss calculation
   188 |       const hoursLost = Math.floor(profile.irp / 8)
@@ -268,8 +275,7 @@ Call log:
   213 |     await navigate(page, '/resultados')
   214 |     
   215 |     // Verify page loads
-> 216 |     await expect(page.locator('text=Resultados')).toBeVisible()
-      |                                                   ^ Error: expect(locator).toBeVisible() failed
+  216 |     await expect(page.locator('text=Resultados')).toBeVisible()
   217 |     
   218 |     // Verify primary CTA (schedule)
   219 |     const scheduleCta = page.locator('a[href*="agendar"], button:has-text("Agendar"), a:has-text("Agendar")').first()
@@ -339,35 +345,4 @@ Call log:
   283 |       const sliders = await page.locator('input[type="range"]').all()
   284 |       for (const slider of sliders) {
   285 |         await slider.evaluate(el => {
-  286 |           (el as HTMLInputElement).value = '3'
-  287 |           el.dispatchEvent(new Event('change', { bubbles: true }))
-  288 |         })
-  289 |       }
-  290 |       const nextButton = page.locator('button:has-text("Siguiente"), button:has-text("Finalizar")')
-  291 |       await nextButton.click()
-  292 |       await page.waitForTimeout(300)
-  293 |     }
-  294 |     
-  295 |     // Lead capture modal should appear
-  296 |     await expect(page.locator('text=/email|correo|lead/i')).toBeVisible({ timeout: 10000 })
-  297 |     
-  298 |     // Fill and submit with unique email
-  299 |     const timestamp = Date.now()
-  300 |     await page.fill('input[type="email"]', `funnel-test-${timestamp}@example.com`)
-  301 |     await page.check('input[name="gdpr_consent"], input[type="checkbox"]')
-  302 |     await page.click('button[type="submit"], button:has-text("Enviar"), button:has-text("Continuar")')
-  303 |     
-  304 |     // Should reach thank you page
-  305 |     await expect(page).toHaveURL(/.*gracias/, { timeout: 15000 })
-  306 |     
-  307 |     // Verify Thank You page content
-  308 |     await expect(page.locator('text=/perfil|resultado|informe/i')).toBeVisible()
-  309 |     
-  310 |     // Click to see results
-  311 |     const resultsButton = page.locator('text=Ver mi informe completo')
-  312 |     await resultsButton.click()
-  313 |     
-  314 |     // Should reach results
-  315 |     await expect(page).toHaveURL(/.*resultados/, { timeout: 15000 })
-  316 |     await expect(page.locator('text=/resultado|recomendación|intervención/i')).toBeVisible()
 ```

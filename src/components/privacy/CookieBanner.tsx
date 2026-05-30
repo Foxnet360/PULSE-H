@@ -46,7 +46,9 @@ const CookieBanner: React.FC = () => {
                     esenciales para el funcionamiento del sitio y cookies analíticas para mejorar tu experiencia.
                   </p>
                   <a
-                    href="/privacidad"
+                    href="https://acrux.life/privacidad"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-xs text-accent hover:text-accent-dark transition-colors mt-1"
                   >
                     Más información

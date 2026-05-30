@@ -197,7 +197,7 @@ const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
                       />
                       <span className="text-sm text-primary-700">
                         Acepto la{' '}
-                        <a href="/privacidad" target="_blank" className="text-accent hover:underline">
+                        <a href="https://acrux.life/privacidad" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
                           politica de privacidad
                         </a>
                         {' '}y el procesamiento de mis datos.
