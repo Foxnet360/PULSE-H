@@ -5,7 +5,7 @@ import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react'
 interface LeadCaptureModalProps {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (email: string, gdprConsent: boolean, marketingConsent: boolean) => Promise<void>
+  onSubmit: (email: string, gdprConsent: boolean, marketingConsent: boolean, extraData?: { name?: string; company?: string; concernArea?: string }) => Promise<void>
   variant?: 'optional' | 'required'
   profile?: string
   irp?: number
@@ -18,6 +18,9 @@ const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
   irp,
 }) => {
   const [email, setEmail] = useState('')
+  const [name, setName] = useState('')
+  const [company, setCompany] = useState('')
+  const [concernArea, setConcernArea] = useState('')
   const [gdprConsent, setGdprConsent] = useState(false)
   const [marketingConsent, setMarketingConsent] = useState(false)
   const [error, setError] = useState('')
@@ -41,7 +44,11 @@ const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
     setIsSubmitting(true)
     
     try {
-      await onSubmit(email, gdprConsent, marketingConsent)
+      await onSubmit(email, gdprConsent, marketingConsent, {
+        name,
+        company,
+        concernArea
+      })
       setSubmitted(true)
     } catch (err) {
       setError('Hubo un error al guardar tus datos. Por favor intenta de nuevo.')
@@ -100,6 +107,57 @@ const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
                         </p>
                       </div>
                     )}
+                  </div>
+
+                  {/* Name (optional) */}
+                  <div>
+                    <label className="block text-sm font-medium text-primary-700 mb-1">
+                      Tu nombre <span className="text-primary-400 font-normal">(opcional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Ej. Juan Pérez"
+                      className="w-full px-4 py-3 rounded-xl border border-primary-200 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+
+                  {/* Company (optional) */}
+                  <div>
+                    <label className="block text-sm font-medium text-primary-700 mb-1">
+                      Empresa <span className="text-primary-400 font-normal">(opcional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={company}
+                      onChange={(e) => setCompany(e.target.value)}
+                      placeholder="Ej. Mi Empresa SAS"
+                      className="w-full px-4 py-3 rounded-xl border border-primary-200 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+
+                  {/* Concern Area */}
+                  <div>
+                    <label className="block text-sm font-medium text-primary-700 mb-1">
+                      ¿Qué área te preocupa más?
+                    </label>
+                    <select
+                      value={concernArea}
+                      onChange={(e) => setConcernArea(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-primary-200 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all bg-white"
+                      disabled={isSubmitting}
+                    >
+                      <option value="">Selecciona una opción</option>
+                      <option value="energia">Energía/Agotamiento</option>
+                      <option value="conexion">Conexión/Cinismo</option>
+                      <option value="proposito">Propósito</option>
+                      <option value="entorno">Entorno</option>
+                      <option value="equilibrio">Equilibrio</option>
+                      <option value="fortaleza">Fortaleza</option>
+                    </select>
                   </div>
 
                   <div>

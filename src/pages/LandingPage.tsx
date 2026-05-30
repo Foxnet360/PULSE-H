@@ -27,6 +27,19 @@ const LandingPage: React.FC = () => {
       {/* Hero Section */}
       <HeroSection />
 
+      {/* Context Bridge */}
+      <section className="bg-primary-50 py-4 border-y border-primary-100">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <p className="text-primary-700 text-sm">
+            <span className="font-semibold">Parte de ACRUX Consultores.</span>{' '}
+            La evaluación de bienestar laboral es un pilar fundamental de nuestra{' '}
+            <a href="https://acrux.life/soluciones/transformacion-cultural" target="_blank" rel="noopener noreferrer" className="text-accent underline">
+              Transformación Cultural
+            </a>.
+          </p>
+        </div>
+      </section>
+
       {/* Stats Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">

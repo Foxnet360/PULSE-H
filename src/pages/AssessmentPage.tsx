@@ -112,12 +112,13 @@ const AssessmentPage: React.FC = () => {
     }
   }
 
-  const handleLeadCapture = async (email: string, gdprConsent: boolean, marketingConsent: boolean) => {
+  const handleLeadCapture = async (email: string, gdprConsent: boolean, marketingConsent: boolean, extraData?: { name?: string; company?: string; concernArea?: string }) => {
     await captureLead(email, {
       profile: assessmentResult?.profileName,
       irp: assessmentResult?.irp,
       gdprConsent,
       marketingConsent,
+      ...extraData,
     })
     
     // Track lead capture complete
@@ -150,16 +151,43 @@ const AssessmentPage: React.FC = () => {
   // Welcome screen
   if (!hasStarted) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-8 pt-24">
+      <div className="max-w-3xl mx-auto px-4 py-8 pt-24">
         <div className="bg-white rounded-2xl shadow-sm border border-primary-100 p-8">
           <div className="text-center mb-8">
             <Heart className="w-16 h-16 text-accent mx-auto mb-4" />
             <h1 className="font-display text-3xl font-bold text-primary-900 mb-4">
               Bienvenido a PULSO-H
             </h1>
-            <p className="text-primary-700 text-lg">
-              Descubre el pulso de tu bienestar laboral en 8 minutos
+            <p className="text-primary-700 text-lg mb-4">
+              Evaluación de Bienestar Laboral con ISTAS-21
             </p>
+            <p className="text-sm text-primary-600 max-w-xl mx-auto">
+              Este diagnóstico utiliza el Cuestionario ISTAS-21 de la Universidad de 
+              Zaragoza, adaptado para el contexto laboral latinoamericano. Evalúa el 
+              riesgo psicosocial y bienestar según el modelo de Maslach.
+            </p>
+          </div>
+
+          {/* Dimension Cards */}
+          <div className="mb-8">
+            <h2 className="font-display text-lg font-bold text-primary-900 mb-4 text-center">
+              6 Dimensiones Evaluadas
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {[
+                { title: 'Mi Energía', desc: 'Agotamiento emocional', color: 'bg-red-50 text-red-600' },
+                { title: 'Mi Conexión', desc: 'Despersonalización', color: 'bg-orange-50 text-orange-600' },
+                { title: 'Mi Propósito', desc: 'Realización personal', color: 'bg-green-50 text-green-600' },
+                { title: 'Mi Entorno', desc: 'Factores organizacionales', color: 'bg-blue-50 text-blue-600' },
+                { title: 'Mi Equilibrio', desc: 'Vida-trabajo', color: 'bg-purple-50 text-purple-600' },
+                { title: 'Mi Fortaleza', desc: 'Resiliencia', color: 'bg-yellow-50 text-yellow-600' },
+              ].map((dim, i) => (
+                <div key={i} className={`${dim.color} rounded-xl p-3 text-center`}>
+                  <h3 className="font-semibold text-sm">{dim.title}</h3>
+                  <p className="text-xs opacity-80">{dim.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-4 mb-8">
@@ -194,7 +222,17 @@ const AssessmentPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="border-t border-primary-100 pt-6">
+          <div className="border-t border-primary-100 pt-6 space-y-4">
+            <div className="bg-blue-50 rounded-xl p-4 mb-4">
+              <p className="text-sm text-blue-800 font-medium mb-1">Privacidad y tratamiento de datos</p>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• Tus respuestas se procesan localmente en tu dispositivo</li>
+                <li>• No almacenamos respuestas individuales</li>
+                <li>• El análisis usa técnicas de k-anonimidad</li>
+                <li>• Cumplimos con la Ley 1581 de 2012 (Colombia)</li>
+              </ul>
+            </div>
+
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -205,7 +243,31 @@ const AssessmentPage: React.FC = () => {
               <span className="text-sm text-primary-700">
                 Entiendo que este diagnóstico es una herramienta de autoevaluación,
                 no un diagnóstico médico o psicológico clínico. Mis respuestas serán
-                procesadas localmente en mi dispositivo.
+                procesadas localmente en mi dispositivo. *
+              </span>
+            </label>
+
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                className="mt-1 w-5 h-5 text-accent border-primary-300 rounded focus:ring-accent"
+              />
+              <span className="text-sm text-primary-700">
+                Acepto el tratamiento de datos según la{' '}
+                <a href="https://acrux.life/privacidad" target="_blank" rel="noopener noreferrer" className="text-accent underline">
+                  política de privacidad
+                </a>
+                . *
+              </span>
+            </label>
+
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                className="mt-1 w-5 h-5 text-accent border-primary-300 rounded focus:ring-accent"
+              />
+              <span className="text-sm text-primary-700">
+                Deseo recibir recomendaciones de bienestar laboral (opcional).
               </span>
             </label>
 

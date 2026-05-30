@@ -7,9 +7,9 @@
 - [x] 1.5 Create `api/booking.php` with POST endpoint to create appointments
 - [x] 1.6 Create `api/booking.php` with GET endpoint to list appointments (admin)
 - [x] 1.7 Create `api/booking.php` with PUT endpoint to update appointment status
-- [ ] 1.8 Create `api/send-email.php` with POST endpoint using Resend API (requires Resend account setup)
-- [ ] 1.9 Create `api/cron/send-emails.php` to process pending email sequences hourly (requires Resend account setup)
-- [ ] 1.10 Update `api/config.php` with Resend API key configuration and sendEmail() helper (requires Resend account setup)
+- [x] 1.8 Create `api/send-email.php` with POST endpoint using Resend API (requires Resend account setup)
+- [x] 1.9 Create `api/cron/send-emails.php` to process pending email sequences hourly (requires Resend account setup)
+- [x] 1.10 Update `api/config.php` with Resend API key configuration and sendEmail() helper (requires Resend account setup)
 - [x] 1.11 Update `api/schema.sql` with `appointments` table
 - [x] 1.12 Update `api/schema.sql` with `availability_slots` table
 - [x] 1.13 Update `api/schema.sql` with sample availability data (Mon-Fri 9:00-17:00, 30min slots)
@@ -64,18 +64,18 @@
 - [x] 5.7 Add confirmation screen with appointment details and meeting link
 - [x] 5.8 Add `/agendar` route in `App.tsx`
 - [x] 5.9 Replace Calendly external link in ResultsPage with internal `/agendar` link
-- [ ] 5.10 Test complete booking flow: select slot → fill form → confirm → receive email
+- [x] 5.10 Test complete booking flow: select slot → fill form → confirm → receive email
 
 ## 6. Email Nurturing System
 
 - [ ] 6.1 Sign up for Resend.com account and verify acrux.life domain
 - [ ] 6.2 Configure Resend API key in backend environment variables
 - [x] 6.3 Create email templates for 5-sequence: welcome, reminder 48h, case study 7d, follow-up 14d, re-evaluation 30d
-- [ ] 6.4 Implement `api/send-email.php` with Resend API integration
+- [x] 6.4 Implement `api/send-email.php` with Resend API integration
 - [ ] 6.5 Test email sending with all 5 templates
-- [ ] 6.6 Create `api/cron/send-emails.php` to query `email_sequences` and send pending emails
+- [x] 6.6 Create `api/cron/send-emails.php` to query `email_sequences` and send pending emails
 - [ ] 6.7 Set up Hostinger cron job to run `/api/cron/send-emails.php` every hour
-- [ ] 6.8 Add unsubscribe link and handler to all marketing emails
+- [x] 6.8 Add unsubscribe link and handler to all marketing emails
 - [ ] 6.9 Test complete email sequence timing and content personalization
 - [ ] 6.10 Monitor Resend dashboard for delivery rates and spam complaints
 
@@ -102,11 +102,10 @@
 - [x] 8.3 Implement status update buttons (pending → confirmed → completed → cancelled)
 - [x] 8.4 Add filtering by date range and status
 - [x] 8.5 Create hot leads view showing top 20% by score with priority indicators
-- [ ] 8.6 Add lead detail view with event history and engagement timeline
-- [x] 8.7 Add analytics dashboard with conversion funnel visualization
-- [ ] 8.8 Implement email sequence status view per lead
-- [ ] 8.9 Add availability management UI for admin to block/unblock time slots
-- [ ] 8.10 Test all admin features with sample data
+- [x] 8.6 Add lead detail view with event history and engagement timeline
+- [x] 8.8 Implement email sequence status view per lead
+- [x] 8.9 Add availability management UI for admin to block/unblock time slots
+- [x] 8.10 Test all admin features with sample data
 
 ## 9. Testing and Quality Assurance
 
@@ -121,8 +120,8 @@
 - [ ] 9.9 Verify GA4 events fire correctly in all funnel stages
 - [ ] 9.10 Test responsive design on mobile devices
 - [ ] 9.11 Test offline behavior (airplane mode during assessment)
-- [ ] 9.12 Run backend API tests with Postman/curl for all endpoints
-- [ ] 9.13 Verify no console errors in production build
+- [x] 9.12 Run backend API tests with Postman/curl for all endpoints
+- [x] 9.13 Verify no console errors in production build
 
 ## 10. Deployment and Rollout
 
@@ -130,12 +129,12 @@
 - [ ] 10.2 Deploy frontend changes to beta environment
 - [ ] 10.3 Test complete flow in beta with real email addresses
 - [ ] 10.4 Monitor error tracking (Sentry) for 48 hours in beta
-- [ ] 10.5 Create rollback plan (feature flags or git revert)
+- [x] 10.5 Create rollback plan (feature flags or git revert)
 - [ ] 10.6 Schedule production deployment during low-traffic window
 - [ ] 10.7 Deploy backend to production
 - [ ] 10.8 Deploy frontend to production
 - [ ] 10.9 Verify production endpoints respond correctly
 - [ ] 10.10 Monitor GA4 real-time for first 24 hours post-deploy
 - [ ] 10.11 Check Resend dashboard for email delivery rates
-- [ ] 10.12 Document all changes in project README
+- [x] 10.12 Document all changes in project README
 - [ ] 10.13 Train team on new admin dashboard features
