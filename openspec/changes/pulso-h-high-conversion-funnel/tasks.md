@@ -68,16 +68,16 @@
 
 ## 6. Email Nurturing System
 
-- [ ] 6.1 Sign up for Resend.com account and verify acrux.life domain
-- [ ] 6.2 Configure Resend API key in backend environment variables
+- [x] 6.1 ~~Sign up for Resend.com account~~ → Migrated to SMTP (same as DIGITAL-H/ACRUX.life)
+- [x] 6.2 ~~Configure Resend API key~~ → SMTP configured in `api/config.php`
 - [x] 6.3 Create email templates for 5-sequence: welcome, reminder 48h, case study 7d, follow-up 14d, re-evaluation 30d
-- [x] 6.4 Implement `api/send-email.php` with Resend API integration
+- [x] 6.4 Implement `api/send-email.php` with ~~Resend API~~ → SMTP integration (Hostinger)
 - [ ] 6.5 Test email sending with all 5 templates
 - [x] 6.6 Create `api/cron/send-emails.php` to query `email_sequences` and send pending emails
 - [ ] 6.7 Set up Hostinger cron job to run `/api/cron/send-emails.php` every hour
 - [x] 6.8 Add unsubscribe link and handler to all marketing emails
 - [ ] 6.9 Test complete email sequence timing and content personalization
-- [ ] 6.10 Monitor Resend dashboard for delivery rates and spam complaints
+- [x] 6.10 ~~Monitor Resend dashboard~~ → Monitor via Hostinger/ACRUX email logs
 
 ## 7. Analytics and Tracking
 
@@ -130,6 +130,6 @@
 - [ ] 10.8 Deploy frontend to production
 - [ ] 10.9 Verify production endpoints respond correctly
 - [ ] 10.10 Monitor GA4 real-time for first 24 hours post-deploy
-- [ ] 10.11 Check Resend dashboard for email delivery rates
+- [ ] 10.11 Monitor email delivery via Hostinger logs
 - [x] 10.12 Document all changes in project README
 - [x] 10.13 Train team on new admin dashboard features

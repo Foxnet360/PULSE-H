@@ -30,7 +30,7 @@ if ($method === 'POST') {
         sendResponse(['error' => 'Invalid email address'], 400);
     }
     
-    // Send email via Resend
+    // Send email via SMTP (Hostinger)
     $result = sendEmail($to, $subject, $html, $text);
     
     if ($result['success']) {
