@@ -14,9 +14,9 @@ if (php_sapi_name() !== 'cli' && !isset($_GET['cron_key'])) {
     exit;
 }
 
-$apiKey = getResendApiKey();
-if (empty($apiKey)) {
-    echo "ERROR: Resend API key not configured\n";
+// SMTP Configuration check
+if (empty($SMTP_HOST) || empty($SMTP_USER)) {
+    echo "ERROR: SMTP configuration not complete\n";
     exit(1);
 }
 

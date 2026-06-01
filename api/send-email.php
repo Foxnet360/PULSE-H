@@ -1,7 +1,7 @@
 <?php
 /**
  * PULSO-H Send Email API
- * Individual email sending endpoint using Resend
+ * Individual email sending endpoint using SMTP (Hostinger)
  */
 
 require_once 'config.php';

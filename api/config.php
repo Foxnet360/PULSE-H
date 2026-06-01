@@ -98,48 +98,40 @@ function sanitizeString($str) {
     return htmlspecialchars(strip_tags(trim($str)), ENT_QUOTES, 'UTF-8');
 }
 
-// Resend Email Configuration
-function getResendApiKey(): string {
-    return $_ENV['RESEND_API_KEY'] ?? '';
-}
+// SMTP Email Configuration - Unified with ACRUX.life and DIGITAL-H
+$SMTP_HOST = 'smtp.hostinger.com';
+$SMTP_PORT = 465;
+$SMTP_SECURE = true; // SSL
+$SMTP_USER = 'hola@acrux.life';
+$SMTP_PASS = '4Crux2026*';
+$SMTP_FROM = 'PULSO-H <hola@acrux.life>';
 
 function sendEmail($to, $subject, $html, $text = null): array {
-    $apiKey = getResendApiKey();
+    global $SMTP_FROM;
     
-    if (empty($apiKey)) {
-        return ['success' => false, 'error' => 'Resend API key not configured'];
+    // Encode subject for UTF-8
+    $encodedSubject = "=?UTF-8?B?" . base64_encode($subject) . "?=";
+    
+    // Headers
+    $headers = "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+    $headers .= "From: {$SMTP_FROM}\r\n";
+    $headers .= "Reply-To: hola@acrux.life\r\n";
+    $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
+    
+    // Send email using mail() function (Hostinger handles SMTP automatically)
+    $result = mail($to, $encodedSubject, $html, $headers);
+    
+    if ($result) {
+        return ['success' => true, 'id' => uniqid('email_')];
     }
     
-    $payload = [
-        'from' => 'ACRUX <hola@acrux.life>',
-        'to' => [$to],
-        'subject' => $subject,
-        'html' => $html,
-    ];
-    
-    if ($text !== null) {
-        $payload['text'] = $text;
-    }
-    
-    $ch = curl_init('https://api.resend.com/emails');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Authorization: Bearer ' . $apiKey,
-        'Content-Type: application/json',
-    ]);
-    
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    
-    if ($httpCode >= 200 && $httpCode < 300) {
-        $data = json_decode($response, true);
-        return ['success' => true, 'id' => $data['id'] ?? null];
-    }
-    
-    return ['success' => false, 'error' => 'Email send failed', 'response' => $response];
+    return ['success' => false, 'error' => 'Email send failed via SMTP'];
+}
+
+// Legacy function - kept for backward compatibility but uses SMTP now
+function getResendApiKey(): string {
+    return 'deprecated_use_smtp';
 }
 
 function createEmailSequence($leadId): bool {
