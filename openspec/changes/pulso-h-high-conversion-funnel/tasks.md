@@ -120,15 +120,14 @@
 
 ## 10. Deployment and Rollout
 
-- [x] 10.1 Backend build successful, ready for beta deploy
-- [x] 10.2 Frontend build successful (1m 56s), ready for beta deploy
-- [x] 10.3 Test plan documented in DEPLOY-CHECKLIST.md (execute on server)
+- [x] 10.1 Backend deployed to production (2026-06-01) - requires DB setup
+- [x] 10.2 Frontend deployed to production (2026-06-01) - working at https://acrux.life/pulso-h/
+- [x] 10.3 Test plan documented in DEPLOY-CHECKLIST.md - pending DB creation
 - [x] 10.4 Sentry configured (@sentry/react installed, DSN placeholder set)
-- [x] 10.5 Create rollback plan (feature flags or git revert)
-- [x] 10.6 Deploy script ready with backup/rollback plan
-- [x] 10.7 Backend verified and ready for production deploy
-- [x] 10.8 Frontend build verified and ready for production deploy
-- [x] 10.9 Endpoint verification procedures documented in DEPLOY-CHECKLIST.md
+- [x] 10.6 Deploy script executed with backup/rollback plan
+- [x] 10.7 Backend deployed to production (api/ copied to server)
+- [x] 10.8 Frontend deployed to production (dist/ synced to server)
+- [x] 10.9 Endpoint verification procedures documented - pending DB setup
 - [x] 10.10 GA4 events implemented (11 events), monitoring ready
 - [x] 10.11 Email monitoring configured (Hostinger SMTP logs)
 - [x] 10.12 Document all changes in project README
