@@ -13,7 +13,7 @@
 - [x] 1.11 Update `api/schema.sql` with `appointments` table
 - [x] 1.12 Update `api/schema.sql` with `availability_slots` table
 - [x] 1.13 Update `api/schema.sql` with sample availability data (Mon-Fri 9:00-17:00, 30min slots)
-- [x] 1.14 Backend ready for deploy (all endpoints verified locally, requires Hostinger deploy)
+- [x] 1.14 Backend deployed to production (2026-06-01) - DB created, endpoints verified
 
 ## 2. Frontend - Lead Capture Integration
 
@@ -72,11 +72,11 @@
 - [x] 6.2 ~~Configure Resend API key~~ → SMTP configured in `api/config.php`
 - [x] 6.3 Create email templates for 5-sequence: welcome, reminder 48h, case study 7d, follow-up 14d, re-evaluation 30d
 - [x] 6.4 Implement `api/send-email.php` with ~~Resend API~~ → SMTP integration (Hostinger)
-- [x] 6.5 Email templates created and verified (SMTP test requires server)
+- [x] 6.5 Email templates tested in production - welcome email sent successfully
 - [x] 6.6 Create `api/cron/send-emails.php` to query `email_sequences` and send pending emails
-- [x] 6.7 Cron script ready (requires Hostinger cron configuration)
+- [x] 6.7 Cron script deployed and tested - manual execution successful
 - [x] 6.8 Add unsubscribe link and handler to all marketing emails
-- [x] 6.9 Email sequences defined (5 templates with delays: 0h, 48h, 168h, 336h, 720h)
+- [x] 6.9 Email sequences tested - cron job processes all 5 templates correctly
 - [x] 6.10 ~~Monitor Resend dashboard~~ → Monitor via Hostinger/ACRUX email logs
 
 ## 7. Analytics and Tracking
@@ -120,15 +120,16 @@
 
 ## 10. Deployment and Rollout
 
-- [x] 10.1 Backend deployed to production (2026-06-01) - requires DB setup
+- [x] 10.1 Backend deployed and DB created (2026-06-01) - all endpoints verified
 - [x] 10.2 Frontend deployed to production (2026-06-01) - working at https://acrux.life/pulso-h/
-- [x] 10.3 Test plan documented in DEPLOY-CHECKLIST.md - pending DB creation
+- [x] 10.3 Complete flow tested in production - DB, API, emails verified
 - [x] 10.4 Sentry configured (@sentry/react installed, DSN placeholder set)
+- [x] 10.5 Backup created: backup_pulso-h_20260601_105842
 - [x] 10.6 Deploy script executed with backup/rollback plan
 - [x] 10.7 Backend deployed to production (api/ copied to server)
 - [x] 10.8 Frontend deployed to production (dist/ synced to server)
-- [x] 10.9 Endpoint verification procedures documented - pending DB setup
+- [x] 10.9 All endpoints verified and responding correctly (200 OK)
 - [x] 10.10 GA4 events implemented (11 events), monitoring ready
-- [x] 10.11 Email monitoring configured (Hostinger SMTP logs)
+- [x] 10.11 Email tested successfully - welcome email delivered
 - [x] 10.12 Document all changes in project README
 - [x] 10.13 Train team on new admin dashboard features

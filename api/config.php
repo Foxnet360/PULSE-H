@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Database configuration - Hostinger Production
 define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
 define('DB_NAME', $_ENV['DB_NAME'] ?? 'u554044004_pulso_h');
-define('DB_USER', $_ENV['DB_USER'] ?? 'u554044004_acruxuser');
+define('DB_USER', $_ENV['DB_USER'] ?? 'u554044004_acruxuser_ph');
 define('DB_PASS', $_ENV['DB_PASS'] ?? '4Crux2026*');
 
 // Rate limiting
