@@ -1,5 +1,13 @@
 # PULSO-H Deploy Checklist
 
+## Deploy Status: ✅ PRODUCTION DEPLOYED (Partial)
+
+- **Frontend**: ✅ Deployed and working (https://acrux.life/pulso-h/)
+- **Backend API**: ✅ Deployed (https://acrux.life/pulso-h/api/)
+- **Database**: ⏳ Needs to be created in Hostinger panel
+- **Cron Job**: ⏳ Needs to be configured in Hostinger panel
+- **Email Testing**: ⏳ Pending database setup
+
 ## Pre-Deploy Verification (✅ Completed)
 
 ### Frontend Build
@@ -32,7 +40,82 @@
 - [x] Sentry DSN placeholder configured
 - [x] API base URL: `https://pulso-h.acrux.life/api`
 
-## Deploy Steps (Requires Hostinger Access)
+## Deploy Completed (2026-06-01)
+
+### ✅ What Was Deployed
+```bash
+# Command used:
+cd /home/foxnet360/Documentos/dev/Acrux/acrux.life
+echo "y" | ./deploy.sh --pulso-h --with-backend --verify
+```
+
+**Results:**
+- ✅ SSH connection verified
+- ✅ Backup created: `backup_pulso-h_20260601_105842`
+- ✅ Frontend build successful (1m 15s)
+- ✅ Frontend deployed to: `domains/acrux.life/public_html/pulso-h/`
+- ✅ Backend API deployed to: `domains/acrux.life/public_html/pulso-h/api/`
+- ✅ .htaccess updated with API exception rules
+- ✅ Config updated with Hostinger credentials
+- ✅ Verification passed: Home OK, Pulso-H OK
+
+### ⏳ Pending Actions
+
+#### 1. Create Database (Required)
+**Location:** Hostinger Control Panel → Databases → MySQL Databases
+
+**Steps:**
+1. Log in to Hostinger control panel
+2. Create new MySQL database:
+   - Database name: `u554044004_pulso_h`
+   - User: `u554044004_acruxuser` (or create new user)
+   - Password: Use strong password (update in `api/config.php` if different)
+3. Run schema.sql:
+   ```bash
+   ssh acrux
+   mysql -u u554044004_acruxuser -p u554044004_pulso_h < domains/acrux.life/public_html/pulso-h/api/schema.sql
+   ```
+
+**Current Error:** All API endpoints return `{"error":"Database connection failed"}` because database doesn't exist.
+
+#### 2. Configure Cron Job (Required for Email Sequences)
+**Location:** Hostinger Control Panel → Advanced → Cron Jobs
+
+**Settings:**
+- Command: `php /home/u554044004/domains/acrux.life/public_html/pulso-h/api/cron/send-emails.php`
+- Schedule: Every hour (`0 * * * *`)
+- Or via SSH:
+  ```bash
+  ssh acrux
+  crontab -e
+  # Add line:
+  0 * * * * /usr/bin/php /home/u554044004/domains/acrux.life/public_html/pulso-h/api/cron/send-emails.php
+  ```
+
+#### 3. Test Email Sending
+After database is created:
+```bash
+# Test welcome email
+curl -X POST https://acrux.life/pulso-h/api/send-email.php \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": "your-email@example.com",
+    "subject": "Test Email",
+    "html": "<h1>Test</h1>",
+    "text": "Test"
+  }'
+```
+
+#### 4. Update Sentry DSN (Optional)
+1. Create project in Sentry.io
+2. Get DSN
+3. Update `.env` file:
+   ```
+   VITE_SENTRY_DSN=https://your-dsn@sentry.io/project-id
+   ```
+4. Rebuild and redeploy frontend
+
+## Deploy Steps (Legacy - For Reference)
 
 ### Step 1: Beta Deploy
 ```bash

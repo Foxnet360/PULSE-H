@@ -14,20 +14,13 @@ echo "Environment: $ENV"
 echo "Timestamp: $TIMESTAMP"
 echo "=========================================="
 
-# Configuration
-if [ "$ENV" == "beta" ]; then
-    REMOTE_HOST="pulso-h-beta.acrux.life"
-    REMOTE_DIR="/home/u123456789/public_html/pulso-h-beta"
-    DB_NAME="pulso_h_beta"
-elif [ "$ENV" == "production" ]; then
-    REMOTE_HOST="pulso-h.acrux.life"
-    REMOTE_DIR="/home/u123456789/public_html/pulso-h"
-    DB_NAME="pulso_h"
-else
-    echo "Error: Unknown environment '$ENV'"
-    echo "Usage: ./deploy.sh [beta|production]"
-    exit 1
-fi
+# Configuration - ACRUX Ecosystem
+REMOTE_HOST="acrux"
+REMOTE_DIR="domains/acrux.life/public_html/pulso-h"
+DB_NAME="u554044004_pulso_h"
+
+echo "Remote: $REMOTE_HOST:$REMOTE_DIR"
+echo "Database: $DB_NAME"
 
 # Pre-deployment checks
 echo ""
@@ -79,16 +72,18 @@ echo "Step 6: Post-deployment verification"
 echo "-------------------------------------"
 echo "Checking endpoints..."
 
-curl -s -o /dev/null -w "%{http_code}" https://$REMOTE_HOST/api/lead.php
+BASE_URL="https://acrux.life/pulso-h"
+
+curl -s -o /dev/null -w "%{http_code}" $BASE_URL/api/lead.php
 echo " - Lead API"
 
-curl -s -o /dev/null -w "%{http_code}" https://$REMOTE_HOST/api/availability.php
+curl -s -o /dev/null -w "%{http_code}" $BASE_URL/api/availability.php
 echo " - Availability API"
 
-curl -s -o /dev/null -w "%{http_code}" https://$REMOTE_HOST/api/booking.php
+curl -s -o /dev/null -w "%{http_code}" $BASE_URL/api/booking.php
 echo " - Booking API"
 
-curl -s -o /dev/null -w "%{http_code}" https://$REMOTE_HOST/api/stats.php
+curl -s -o /dev/null -w "%{http_code}" $BASE_URL/api/stats.php
 echo " - Stats API"
 
 echo ""
@@ -97,11 +92,8 @@ echo "Deployment to $ENV complete!"
 echo "=========================================="
 echo ""
 echo "Next steps:"
-echo "1. Verify frontend loads correctly: https://$REMOTE_HOST"
+echo "1. Verify frontend loads correctly: $BASE_URL/"
 echo "2. Test complete user flow"
 echo "3. Check GA4 real-time dashboard"
 echo "4. Monitor Sentry for errors"
-if [ "$ENV" == "beta" ]; then
-    echo "5. After beta validation, deploy to production with: ./deploy.sh production"
-fi
 echo ""

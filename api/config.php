@@ -14,11 +14,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Database configuration
+// Database configuration - Hostinger Production
 define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
-define('DB_NAME', $_ENV['DB_NAME'] ?? 'pulso_h');
-define('DB_USER', $_ENV['DB_USER'] ?? 'pulso_user');
-define('DB_PASS', $_ENV['DB_PASS'] ?? '');
+define('DB_NAME', $_ENV['DB_NAME'] ?? 'u554044004_pulso_h');
+define('DB_USER', $_ENV['DB_USER'] ?? 'u554044004_acruxuser');
+define('DB_PASS', $_ENV['DB_PASS'] ?? '4Crux2026*');
 
 // Rate limiting
 define('RATE_LIMIT_REQUESTS', 100);
