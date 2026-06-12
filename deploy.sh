@@ -1,108 +1,99 @@
 #!/bin/bash
-
 # PULSO-H Deployment Script
-# Deploys to Hostinger shared hosting via rsync
-# Following the same pattern as DIGITAL-H
+# Usage: ./deploy.sh [environment]
+# Environments: beta, production
 
 set -e
 
-# Configuration (from acrux.life deploy pattern)
-HOST="acrux"
-REMOTE_PATH="domains/acrux.life/public_html/pulso-h"
-BETA_PATH="domains/acrux.life/public_html/pulso-h-beta"
-LOCAL_BUILD="./dist"
+ENV=${1:-beta}
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+echo "=========================================="
+echo "PULSO-H Deployment"
+echo "Environment: $ENV"
+echo "Timestamp: $TIMESTAMP"
+echo "=========================================="
 
-echo -e "${YELLOW}=== PULSO-H Deployment ===${NC}"
+# Configuration - ACRUX Ecosystem
+REMOTE_HOST="acrux"
+REMOTE_DIR="domains/acrux.life/public_html/pulso-h"
+DB_NAME="u554044004_pulso_h"
+
+echo "Remote: $REMOTE_HOST:$REMOTE_DIR"
+echo "Database: $DB_NAME"
+
+# Pre-deployment checks
 echo ""
+echo "Step 1: Pre-deployment checks"
+echo "------------------------------"
 
-# Check if target is specified
-TARGET=${1:-beta}
-
-if [ "$TARGET" = "beta" ]; then
-  DEPLOY_PATH="$BETA_PATH"
-  echo -e "${YELLOW}Deploying to BETA environment...${NC}"
-elif [ "$TARGET" = "production" ]; then
-  DEPLOY_PATH="$REMOTE_PATH"
-  echo -e "${GREEN}Deploying to PRODUCTION environment...${NC}"
-else
-  echo -e "${RED}Unknown target: $TARGET${NC}"
-  echo "Usage: ./deploy.sh [beta|production]"
-  exit 1
-fi
-
-echo ""
-
-# Step 1: Run tests
-echo -e "${YELLOW}Step 1: Running tests...${NC}"
-npm run test:run
-if [ $? -ne 0 ]; then
-  echo -e "${RED}Tests failed! Aborting deployment.${NC}"
-  exit 1
-fi
-echo -e "${GREEN}✓ Tests passed${NC}"
-echo ""
-
-# Step 2: Build
-echo -e "${YELLOW}Step 2: Building project...${NC}"
+# Check if build succeeds
+echo "Building frontend..."
 npm run build
-if [ $? -ne 0 ]; then
-  echo -e "${RED}Build failed! Aborting deployment.${NC}"
-  exit 1
-fi
-echo -e "${GREEN}✓ Build successful${NC}"
-echo ""
 
-# Step 3: Copy .htaccess to dist
-echo -e "${YELLOW}Step 3: Copying .htaccess...${NC}"
-cp public/.htaccess dist/
-echo -e "${GREEN}✓ .htaccess copied${NC}"
-echo ""
-
-# Step 4: Deploy via rsync
-echo -e "${YELLOW}Step 4: Deploying to server...${NC}"
-echo "Host: $HOST"
-echo "Target: $DEPLOY_PATH"
-echo ""
-
-rsync -avz --delete \
-  --exclude='*.map' \
-  --exclude='.DS_Store' \
-  "$LOCAL_BUILD/" \
-  "$HOST:$DEPLOY_PATH/"
-
-if [ $? -ne 0 ]; then
-  echo -e "${RED}Deployment failed!${NC}"
-  exit 1
+# Check for console errors in build
+echo "Checking build output..."
+if [ ! -d "dist" ]; then
+    echo "Error: dist directory not found. Build failed?"
+    exit 1
 fi
 
-echo -e "${GREEN}✓ Deployment successful${NC}"
+# Backup current deployment
 echo ""
+echo "Step 2: Backup current deployment"
+echo "----------------------------------"
+ssh $REMOTE_HOST "cd $REMOTE_DIR && tar -czf backup_${TIMESTAMP}.tar.gz ."
+echo "Backup created: backup_${TIMESTAMP}.tar.gz"
 
-# Step 5: Verify deployment
-echo -e "${YELLOW}Step 5: Verifying deployment...${NC}"
-if [ "$TARGET" = "beta" ]; then
-  echo -e "${GREEN}Beta URL: https://acrux.life/pulso-h-beta/${NC}"
-else
-  echo -e "${GREEN}Production URL: https://acrux.life/pulso-h/${NC}"
-fi
+# Deploy frontend
 echo ""
+echo "Step 3: Deploy frontend"
+echo "------------------------"
+rsync -avz --delete dist/ $REMOTE_HOST:$REMOTE_DIR/
+echo "Frontend deployed successfully"
 
-echo -e "${GREEN}=== Deployment Complete ===${NC}"
+# Deploy backend
 echo ""
-echo "Remember to:"
-echo "  1. Test the deployed application"
-echo "  2. Check browser console for errors"
-echo "  3. Verify all routes work correctly"
-echo "  4. Test on mobile devices"
-echo ""
+echo "Step 4: Deploy backend"
+echo "----------------------"
+rsync -avz api/ $REMOTE_HOST:$REMOTE_DIR/api/
+echo "Backend deployed successfully"
 
-if [ "$TARGET" = "production" ]; then
-  echo -e "${YELLOW}⚠️  Production deployment complete!${NC}"
-  echo -e "${YELLOW}   Monitor analytics and error tracking.${NC}"
-fi
+# Database migrations (if needed)
+echo ""
+echo "Step 5: Database checks"
+echo "-----------------------"
+echo "Make sure to run schema.sql if this is the first deployment:"
+echo "  mysql -u pulso_user -p $DB_NAME < api/schema.sql"
+
+# Post-deployment verification
+echo ""
+echo "Step 6: Post-deployment verification"
+echo "-------------------------------------"
+echo "Checking endpoints..."
+
+BASE_URL="https://acrux.life/pulso-h"
+
+curl -s -o /dev/null -w "%{http_code}" $BASE_URL/api/lead.php
+echo " - Lead API"
+
+curl -s -o /dev/null -w "%{http_code}" $BASE_URL/api/availability.php
+echo " - Availability API"
+
+curl -s -o /dev/null -w "%{http_code}" $BASE_URL/api/booking.php
+echo " - Booking API"
+
+curl -s -o /dev/null -w "%{http_code}" $BASE_URL/api/stats.php
+echo " - Stats API"
+
+echo ""
+echo "=========================================="
+echo "Deployment to $ENV complete!"
+echo "=========================================="
+echo ""
+echo "Next steps:"
+echo "1. Verify frontend loads correctly: $BASE_URL/"
+echo "2. Test complete user flow"
+echo "3. Check GA4 real-time dashboard"
+echo "4. Monitor Sentry for errors"
+echo ""

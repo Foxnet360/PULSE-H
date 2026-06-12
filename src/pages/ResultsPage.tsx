@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { AssessmentResult, Intervention } from '../types/assessment'
 import { getRecommendedInterventions } from '../data/interventionData'
 import { getProfileColor, getIRPZoneColor } from '../utils/assessmentEngine'
-import { Download, Share2, Calendar, ChevronDown, ChevronUp, AlertTriangle, TrendingUp, ArrowRight } from 'lucide-react'
+import { Download, Calendar, ChevronDown, ChevronUp, AlertTriangle, TrendingUp, ArrowRight, Compass } from 'lucide-react'
 import { getTestimonialsByProfile } from '../data/testimonials'
 import { trackResultsView, trackPDFDownload, trackCTAClick } from '../utils/analytics'
 
@@ -70,20 +70,6 @@ const ResultsPage: React.FC = () => {
     trackPDFDownload()
     // TODO: Implement PDF generation
     alert('Función de descarga de PDF en desarrollo')
-  }
-
-  const handleShare = () => {
-    trackCTAClick('share')
-    if (navigator.share) {
-      navigator.share({
-        title: 'Mi evaluación de bienestar laboral - PULSO-H',
-        text: `Mi perfil de bienestar es: ${result.profileName}`,
-        url: window.location.href,
-      })
-    } else {
-      navigator.clipboard.writeText(window.location.href)
-      alert('Enlace copiado al portapapeles')
-    }
   }
 
   const toggleAction = (id: string) => {
@@ -314,34 +300,65 @@ const ResultsPage: React.FC = () => {
         </div>
       )}
 
-      {/* CTAs - Restructured Hierarchy */}
-      <div className="space-y-4">
-        {/* Primary CTA */}
-        <button
-          onClick={() => navigate('/agendar')}
-          className="w-full px-8 py-5 bg-gradient-to-r from-accent to-accent-dark text-white font-bold text-lg rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-3 group"
-        >
-          <Calendar className="w-6 h-6" />
-          Agendar revisión gratuita de 30 min
-          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-        </button>
+      {/* Next Steps Section */}
+      <div className="bg-white rounded-2xl shadow-sm border border-primary-100 p-8">
+        <h2 className="font-display text-2xl font-bold text-primary-900 text-center mb-8">
+          ¿Quieres profundizar en tus resultados?
+        </h2>
 
-        {/* Secondary CTAs */}
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="grid md:grid-cols-3 gap-6">
+          {/* Calendly */}
+          <a
+            href="https://calendly.com/acrux-consultores/30min"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackCTAClick('calendly')}
+            className="group bg-accent-50 rounded-xl p-6 hover:bg-accent-100 transition-colors cursor-pointer"
+          >
+            <div className="w-12 h-12 bg-accent rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Calendar className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="font-semibold text-primary-900 mb-2">Agendar consultoría</h3>
+            <p className="text-sm text-primary-600 mb-4">30 minutos gratuitos para interpretar tus resultados de bienestar.</p>
+            <span className="inline-flex items-center text-accent text-sm font-semibold">
+              Agendar ahora
+              <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+            </span>
+          </a>
+
+          {/* Services */}
+          <a
+            href="https://acrux.life/soluciones"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackCTAClick('services')}
+            className="group bg-primary-50 rounded-xl p-6 hover:bg-primary-100 transition-colors cursor-pointer"
+          >
+            <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Compass className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="font-semibold text-primary-900 mb-2">Ver soluciones</h3>
+            <p className="text-sm text-primary-600 mb-4">Conoce cómo ayudamos a mejorar el bienestar de equipos como el tuyo.</p>
+            <span className="inline-flex items-center text-primary-600 text-sm font-semibold">
+              Explorar
+              <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+            </span>
+          </a>
+
+          {/* PDF */}
           <button
             onClick={handleDownloadPDF}
-            className="flex-1 px-6 py-4 bg-white text-primary-900 font-medium rounded-xl border-2 border-primary-200 hover:border-accent transition-colors flex items-center justify-center gap-2"
+            className="group bg-green-50 rounded-xl p-6 hover:bg-green-100 transition-colors text-left w-full"
           >
-            <Download className="w-5 h-5" />
-            Descargar informe PDF
-          </button>
-
-          <button
-            onClick={handleShare}
-            className="flex-1 px-6 py-4 bg-white text-primary-500 font-medium rounded-xl border border-primary-200 hover:border-accent transition-colors flex items-center justify-center gap-2 text-sm"
-          >
-            <Share2 className="w-4 h-4" />
-            Compartir resultados
+            <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Download className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="font-semibold text-primary-900 mb-2">Descargar informe</h3>
+            <p className="text-sm text-primary-600 mb-4">Obtén tu reporte completo en PDF para compartir con tu equipo.</p>
+            <span className="inline-flex items-center text-green-600 text-sm font-semibold">
+              Descargar
+              <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+            </span>
           </button>
         </div>
       </div>

@@ -307,4 +307,23 @@ export const getAllTemplates = (): EmailTemplate[] => {
   return emailTemplates
 }
 
+export interface EmailPersonalization {
+  name?: string;
+  profile_name?: string;
+  profile_color?: string;
+  irp?: number | string;
+  results_url?: string;
+  schedule_url?: string;
+  unsubscribe_url?: string;
+  assessment_url?: string;
+}
+
+export const generateEmailSequence = (_personalization: EmailPersonalization) => {
+  const now = new Date()
+  return emailTemplates.map(template => ({
+    template,
+    scheduledDate: new Date(now.getTime() + template.delayHours * 60 * 60 * 1000)
+  }))
+}
+
 export default emailTemplates

@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { Settings, Link2, BarChart3, Calendar, Users, TrendingUp, Star, ChevronDown, Filter } from 'lucide-react'
 import { useLinkManagement } from '../hooks/useLinkManagement'
+import { useAuth } from '../context/AuthContext'
 import LinkGenerator from '../components/admin/LinkGenerator'
 import EvaluationList from '../components/admin/EvaluationList'
 
-type Tab = 'create' | 'active' | 'closed' | 'appointments' | 'leads' | 'analytics'
+type Tab = 'create' | 'active' | 'closed' | 'appointments' | 'leads' | 'analytics' | 'availability'
 
 interface Appointment {
   id: number
@@ -26,6 +27,36 @@ interface Lead {
   score: number
   status: string
   created_at: string
+}
+
+interface LeadEvent {
+  id: number
+  event_type: string
+  event_data: string | null
+  score_value: number
+  created_at: string
+}
+
+interface EmailSequence {
+  id: number
+  lead_id: number
+  email_1_sent: boolean
+  email_1_sent_at: string | null
+  email_2_sent: boolean
+  email_2_sent_at: string | null
+  email_3_sent: boolean
+  email_3_sent_at: string | null
+  email_4_sent: boolean
+  email_4_sent_at: string | null
+  email_5_sent: boolean
+  email_5_sent_at: string | null
+}
+
+interface AvailabilitySlot {
+  id: number
+  slot_date: string
+  slot_time: string
+  is_available: boolean
 }
 
 interface Stats {
@@ -62,16 +93,27 @@ const AdminPage: React.FC = () => {
   const [leads, setLeads] = useState<Lead[]>([])
   const [hotLeads, setHotLeads] = useState<Lead[]>([])
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
+  const [leadEvents, setLeadEvents] = useState<LeadEvent[]>([])
+  const [emailSequences, setEmailSequences] = useState<EmailSequence[]>([])
+  
+  // Availability state
+  const [availabilitySlots, setAvailabilitySlots] = useState<AvailabilitySlot[]>([])
+  const [availabilityDate, setAvailabilityDate] = useState(new Date().toISOString().split('T')[0])
   
   // Analytics state
   const [stats, setStats] = useState<Stats | null>(null)
   const [funnel, setFunnel] = useState<FunnelData | null>(null)
   const [conversionRates, setConversionRates] = useState<Record<string, number>>({})
+  const [password, setPassword] = useState('')
+  const [loginError, setLoginError] = useState('')
+
+  const { isAuthenticated, login } = useAuth()
 
   useEffect(() => {
     fetchAppointments()
     fetchLeads()
     fetchAnalytics()
+    fetchEmailSequences()
   }, [])
 
   const fetchAppointments = async () => {
@@ -118,6 +160,58 @@ const AdminPage: React.FC = () => {
     }
   }
 
+  const fetchLeadEvents = async (leadId: number) => {
+    try {
+      const response = await fetch(`/api/lead.php?events=${leadId}`)
+      const data = await response.json()
+      if (data.success) {
+        setLeadEvents(data.events)
+      }
+    } catch (error) {
+      console.error('Failed to fetch lead events:', error)
+    }
+  }
+
+  const fetchEmailSequences = async () => {
+    try {
+      const response = await fetch('/api/lead.php?sequences=true')
+      const data = await response.json()
+      if (data.success) {
+        setEmailSequences(data.sequences)
+      }
+    } catch (error) {
+      console.error('Failed to fetch email sequences:', error)
+    }
+  }
+
+  const fetchAvailability = async () => {
+    try {
+      const response = await fetch(`/api/availability.php?date=${availabilityDate}`)
+      const data = await response.json()
+      if (data.success) {
+        setAvailabilitySlots(data.slots)
+      }
+    } catch (error) {
+      console.error('Failed to fetch availability:', error)
+    }
+  }
+
+  const updateAvailability = async (slotId: number, isAvailable: boolean) => {
+    try {
+      const response = await fetch(`/api/availability.php?id=${slotId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_available: isAvailable }),
+      })
+      
+      if (response.ok) {
+        fetchAvailability()
+      }
+    } catch (error) {
+      console.error('Failed to update availability:', error)
+    }
+  }
+
   const updateAppointmentStatus = async (id: number, status: string) => {
     try {
       const response = await fetch(`/api/booking.php?id=${id}`, {
@@ -141,6 +235,14 @@ const AdminPage: React.FC = () => {
     setTimeout(() => setCopiedHash(null), 2000)
   }
 
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoginError('')
+    if (!login(password)) {
+      setLoginError('Contraseña incorrecta. Intenta de nuevo.')
+    }
+  }
+
   const filteredAppointments = appointments.filter(apt => {
     if (appointmentFilter === 'all') return true
     return apt.status === appointmentFilter
@@ -150,6 +252,7 @@ const AdminPage: React.FC = () => {
     { id: 'analytics', label: 'Analytics', icon: <TrendingUp className="w-4 h-4" /> },
     { id: 'appointments', label: 'Citas', icon: <Calendar className="w-4 h-4" />, count: appointments.filter(a => a.status === 'pending').length },
     { id: 'leads', label: 'Leads', icon: <Users className="w-4 h-4" />, count: leads.length },
+    { id: 'availability', label: 'Disponibilidad', icon: <Calendar className="w-4 h-4" /> },
     { id: 'create', label: 'Crear evaluación', icon: <Link2 className="w-4 h-4" /> },
     { id: 'active', label: 'Activas', icon: <BarChart3 className="w-4 h-4" />, count: activeEvaluations.length },
     { id: 'closed', label: 'Cerradas', icon: <Settings className="w-4 h-4" />, count: closedEvaluations.length },
@@ -173,6 +276,39 @@ const AdminPage: React.FC = () => {
       case 'cancelled': return 'Cancelada'
       default: return status
     }
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4 py-8 pt-24 bg-surface">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-primary-100 p-8">
+          <h1 className="font-display text-2xl font-bold text-primary-900 mb-2">
+            Acceso administrativo
+          </h1>
+          <p className="text-primary-600 mb-6">
+            Ingresa la contraseña para continuar.
+          </p>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Contraseña"
+              className="w-full px-4 py-3 border border-primary-200 rounded-lg focus:ring-2 focus:ring-accent focus:outline-none"
+            />
+            {loginError && (
+              <p className="text-red-600 text-sm">{loginError}</p>
+            )}
+            <button
+              type="submit"
+              className="w-full bg-primary text-white font-bold py-3 rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Ingresar
+            </button>
+          </form>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -379,7 +515,15 @@ const AdminPage: React.FC = () => {
                 <div
                   key={lead.id}
                   className="bg-white rounded-2xl shadow-sm border border-primary-100 p-6 cursor-pointer hover:border-accent transition-colors"
-                  onClick={() => setSelectedLead(selectedLead?.id === lead.id ? null : lead)}
+                  onClick={() => {
+                    if (selectedLead?.id === lead.id) {
+                      setSelectedLead(null)
+                      setLeadEvents([])
+                    } else {
+                      setSelectedLead(lead)
+                      fetchLeadEvents(lead.id)
+                    }
+                  }}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -393,6 +537,66 @@ const AdminPage: React.FC = () => {
                     </div>
                     <ChevronDown className={`w-5 h-5 text-primary-400 transition-transform ${selectedLead?.id === lead.id ? 'rotate-180' : ''}`} />
                   </div>
+                  
+                  {/* Lead Detail View */}
+                  {selectedLead?.id === lead.id && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      transition={{ duration: 0.2 }}
+                      className="mt-4 pt-4 border-t border-primary-100"
+                    >
+                      <h3 className="font-medium text-primary-900 mb-3">Historial de Eventos</h3>
+                      {leadEvents.length > 0 ? (
+                        <div className="space-y-2">
+                          {leadEvents.map((event) => (
+                            <div key={event.id} className="flex items-center justify-between text-sm p-2 bg-primary-50 rounded-lg">
+                              <div>
+                                <span className="font-medium text-primary-700">{event.event_type}</span>
+                                {event.score_value > 0 && (
+                                  <span className="ml-2 px-2 py-0.5 bg-accent/10 text-accent text-xs rounded-full">+{event.score_value} pts</span>
+                                )}
+                              </div>
+                              <span className="text-primary-500 text-xs">{new Date(event.created_at).toLocaleDateString('es-ES')} {new Date(event.created_at).toLocaleTimeString('es-ES')}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-primary-500">Sin eventos registrados</p>
+                      )}
+                      
+                      {/* Email Sequence Status */}
+                      <div className="mt-4">
+                        <h3 className="font-medium text-primary-900 mb-3">Secuencia de Emails</h3>
+                        {(() => {
+                          const sequence = emailSequences.find(s => s.lead_id === lead.id)
+                          if (!sequence) return <p className="text-sm text-primary-500">Sin secuencia activa</p>
+                          
+                          const emails = [
+                            { label: 'Bienvenida', sent: sequence.email_1_sent, date: sequence.email_1_sent_at },
+                            { label: 'Recordatorio 48h', sent: sequence.email_2_sent, date: sequence.email_2_sent_at },
+                            { label: 'Caso de éxito', sent: sequence.email_3_sent, date: sequence.email_3_sent_at },
+                            { label: 'Seguimiento', sent: sequence.email_4_sent, date: sequence.email_4_sent_at },
+                            { label: 'Re-evaluación', sent: sequence.email_5_sent, date: sequence.email_5_sent_at },
+                          ]
+                          
+                             return (
+                             <div className="grid grid-cols-5 gap-2">
+                              {emails.map((email, idx) => (
+                                <div key={idx} className={`text-center p-2 rounded-lg ${email.sent ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                                  <div className="text-xs font-medium">{email.label}</div>
+                                  <div className="text-xs mt-1">{email.sent ? '✓ Enviado' : 'Pendiente'}</div>
+                                  {email.date && (
+                                    <div className="text-xs mt-1 opacity-75">{new Date(email.date).toLocaleDateString('es-ES')}</div>
+                                  )}
+                                </div>
+                              ))}
+                             </div>
+                             )
+                         })()}
+                      </div>
+                    </motion.div>
+                  )}
                 </div>
               ))}
             </div>
@@ -428,6 +632,63 @@ const AdminPage: React.FC = () => {
                   </tbody>
                 </table>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Availability Tab */}
+        {activeTab === 'availability' && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-display text-xl font-bold text-primary-900">Gestión de Disponibilidad</h2>
+              <div className="flex items-center gap-2">
+                <input
+                  type="date"
+                  value={availabilityDate}
+                  onChange={(e) => {
+                    setAvailabilityDate(e.target.value)
+                    fetchAvailability()
+                  }}
+                  className="text-sm border border-primary-200 rounded-lg px-3 py-2"
+                />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-sm border border-primary-100 p-6">
+              <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
+                {availabilitySlots.map((slot) => (
+                  <button
+                    key={slot.id}
+                    onClick={() => updateAvailability(slot.id, !slot.is_available)}
+                    className={`p-3 rounded-lg text-sm font-medium transition-all ${
+                      slot.is_available
+                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                        : 'bg-red-100 text-red-700 hover:bg-red-200'
+                    }`}
+                  >
+                    <div>{slot.slot_time}</div>
+                    <div className="text-xs mt-1">{slot.is_available ? 'Disponible' : 'Bloqueado'}</div>
+                  </button>
+                ))}
+              </div>
+              
+              {availabilitySlots.length === 0 && (
+                <div className="text-center py-12 text-primary-500">
+                  No hay slots configurados para esta fecha
+                </div>
+              )}
+            </div>
+            
+            <div className="mt-6 flex items-center gap-4 text-sm text-primary-600">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-green-100 rounded"></div>
+                <span>Disponible</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-red-100 rounded"></div>
+                <span>Bloqueado</span>
+              </div>
+              <p className="ml-auto">Haz click en un slot para cambiar su estado</p>
             </div>
           </div>
         )}

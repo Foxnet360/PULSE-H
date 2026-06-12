@@ -33,10 +33,15 @@ const saveSchedule = (schedule: ScheduledEmail[]) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(schedule))
 }
 
+const NURTURING_API = '/api/nurturing-schedule.php'
+
 export const useEmailNurturing = () => {
   const [schedule, setSchedule] = useState<ScheduledEmail[]>(getStoredSchedule)
 
-  const scheduleEmails = useCallback((personalization: EmailPersonalization) => {
+  const scheduleEmails = useCallback(async (
+    personalization: EmailPersonalization,
+    leadEmail: string
+  ) => {
     const sequence = generateEmailSequence(personalization)
     
     const newSchedule: ScheduledEmail[] = sequence.map((item) => ({
@@ -49,8 +54,37 @@ export const useEmailNurturing = () => {
       clicked: false,
     }))
 
+    // Keep local state for UI feedback
     setSchedule(newSchedule)
     saveSchedule(newSchedule)
+
+    // POST to backend so the sequence runs server-side (independent of browser)
+    try {
+      const payload = {
+        email: leadEmail,
+        name: personalization.name || '',
+        profile: personalization.profile_name || 'unknown',
+        irp: personalization.irp || 0,
+        sequence: newSchedule.map((item) => ({
+          templateId: item.templateId,
+          subject: item.subject,
+          scheduledDate: item.scheduledDate.toISOString(),
+        })),
+      }
+
+      const response = await fetch(NURTURING_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        console.error('[useEmailNurturing] Backend returned:', response.status)
+      }
+    } catch (error) {
+      // Non-fatal: local schedule still saved, backend will retry on next session
+      console.error('[useEmailNurturing] Failed to sync to backend:', error)
+    }
 
     return newSchedule
   }, [])

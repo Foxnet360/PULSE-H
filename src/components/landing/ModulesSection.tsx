@@ -94,7 +94,7 @@ const ModulesSection: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 text-accent rounded-full text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 text-primary-900 rounded-full text-sm font-medium mb-6">
             <Clock className="w-4 h-4" />
             <span>8 minutos en total</span>
           </div>
@@ -149,7 +149,7 @@ const ModulesSection: React.FC = () => {
         >
           <a
             href="/evaluar"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-semibold rounded-xl hover:bg-accent-dark transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-primary-900 font-bold rounded-xl hover:bg-accent-dark transition-colors"
           >
             Comenzar evaluación de 8 minutos
             <ArrowRight className="w-5 h-5" />

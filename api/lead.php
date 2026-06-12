@@ -146,14 +146,59 @@ switch ($method) {
             updateLeadScore($db, $leadId, $eventsScore);
         }
         
+        // Create email sequence
+        createEmailSequence($leadId);
+        
+        // Send welcome email if marketing consent is true
+        $emailResult = null;
+        if (!empty($data['marketing_consent'])) {
+            $emailResult = sendWelcomeEmail($leadId);
+        }
+        
         sendResponse([
             'success' => true,
             'id' => $leadId,
             'events_processed' => isset($data['events']) ? count($data['events']) : 0,
             'score_added' => $eventsScore,
+            'welcome_email' => $emailResult,
         ]);
         
     case 'GET':
+        // Get events for a specific lead
+        if (isset($_GET['events'])) {
+            $leadId = (int)$_GET['events'];
+            if ($leadId <= 0) {
+                sendResponse(['error' => 'Invalid lead ID'], 400);
+            }
+            
+            $stmt = $db->prepare("SELECT * FROM lead_events WHERE lead_id = :lead_id ORDER BY created_at DESC");
+            $stmt->execute([':lead_id' => $leadId]);
+            $events = $stmt->fetchAll();
+            
+            sendResponse([
+                'success' => true,
+                'lead_id' => $leadId,
+                'events' => $events,
+            ]);
+        }
+        
+        // Get all email sequences
+        if (isset($_GET['sequences'])) {
+            $stmt = $db->prepare("
+                SELECT es.*, l.email, l.name, l.profile, l.score as irp
+                FROM email_sequences es
+                JOIN leads l ON es.lead_id = l.id
+                ORDER BY es.created_at DESC
+            ");
+            $stmt->execute();
+            $sequences = $stmt->fetchAll();
+            
+            sendResponse([
+                'success' => true,
+                'sequences' => $sequences,
+            ]);
+        }
+        
         if (isset($_GET['id'])) {
             $stmt = $db->prepare("SELECT * FROM leads WHERE id = :id");
             $stmt->execute([':id' => $_GET['id']]);

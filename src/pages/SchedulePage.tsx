@@ -140,13 +140,13 @@ const SchedulePage: React.FC = () => {
 
           <div className="bg-primary-50 rounded-xl p-6 mb-6 text-left">
             <div className="flex items-center gap-3 mb-3">
-              <Calendar className="w-5 h-5 text-accent" />
+              <Calendar className="w-5 h-5 text-primary-900" />
               <span className="text-primary-700">
                 <strong>Fecha:</strong> {appointmentData?.appointment_date}
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <Clock className="w-5 h-5 text-accent" />
+              <Clock className="w-5 h-5 text-primary-900" />
               <span className="text-primary-700">
                 <strong>Hora:</strong> {appointmentData?.appointment_time}
               </span>
@@ -160,7 +160,7 @@ const SchedulePage: React.FC = () => {
 
           <button
             onClick={() => navigate('/resultados')}
-            className="px-6 py-3 bg-accent text-white font-medium rounded-xl hover:bg-accent-dark transition-colors"
+            className="px-6 py-3 bg-primary text-white font-medium rounded-xl hover:bg-accent-dark transition-colors"
           >
             Ver mis resultados
           </button>
@@ -204,7 +204,7 @@ const SchedulePage: React.FC = () => {
       {/* Calendar Grid */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-accent" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary-900" />
         </div>
       ) : (
         <div className="grid grid-cols-5 gap-4 mb-8">
@@ -225,7 +225,7 @@ const SchedulePage: React.FC = () => {
                     disabled={!slot.available}
                     className={`w-full py-2 px-1 rounded-lg text-sm font-medium transition-all ${
                       selectedDate === day.date && selectedSlot?.id === slot.id
-                        ? 'bg-accent text-white shadow-md'
+                        ? 'bg-primary text-white shadow-md'
                         : slot.available
                         ? 'bg-primary-50 text-primary-700 hover:bg-primary-100'
                         : 'bg-gray-100 text-gray-400 cursor-not-allowed'
@@ -265,7 +265,7 @@ const SchedulePage: React.FC = () => {
           <button
             onClick={handleBooking}
             disabled={isBooking}
-            className="w-full px-6 py-4 bg-accent text-white font-bold rounded-xl hover:bg-accent-dark transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full px-6 py-4 bg-primary text-white font-bold rounded-xl hover:bg-accent-dark transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isBooking ? (
               <>

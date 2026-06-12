@@ -1,5 +1,5 @@
 import React from 'react'
-import { Heart, Mail, Phone, MapPin, ExternalLink } from 'lucide-react'
+import { Heart, Mail, MapPin, ExternalLink } from 'lucide-react'
 
 const FooterSection: React.FC = () => {
   return (
@@ -19,19 +19,11 @@ const FooterSection: React.FC = () => {
 
             <div className="space-y-2">
               <a
-                href="mailto:contacto@acruxconsultores.com"
+                href="mailto:hola@acrux.life"
                 className="flex items-center gap-2 text-sm text-primary-300 hover:text-white transition-colors"
               >
                 <Mail className="w-4 h-4" />
-                contacto@acruxconsultores.com
-              </a>
-              
-              <a
-                href="tel:+573001234567"
-                className="flex items-center gap-2 text-sm text-primary-300 hover:text-white transition-colors"
-              >
-                <Phone className="w-4 h-4" />
-                +57 300 123 4567
+                hola@acrux.life
               </a>
               
               <div className="flex items-center gap-2 text-sm text-primary-300">
@@ -48,8 +40,6 @@ const FooterSection: React.FC = () => {
               {[
                 { label: 'Evaluación individual', href: '/evaluar' },
                 { label: 'Evaluación organizacional', href: '/evaluar' },
-                { label: 'Dashboard', href: '/dashboard' },
-                { label: 'Resultados', href: '/resultados' },
               ].map((item) => (
                 <li key={item.label}>
                   <a
@@ -68,18 +58,20 @@ const FooterSection: React.FC = () => {
             
             <ul className="space-y-2">
               {[
-                { label: 'Sobre ACRUX', href: '#' },
-                { label: 'Servicios de consultoría', href: '#' },
-                { label: 'Blog', href: '#' },
-                { label: 'Contacto', href: '#' },
+                { label: 'Sobre ACRUX', href: 'https://acrux.life/esencia' },
+                { label: 'Servicios de consultoría', href: 'https://acrux.life/soluciones' },
+                { label: 'Blog', href: 'https://acrux.life/el-radar' },
+                { label: 'Contacto', href: 'https://acrux.life/contacto' },
               ].map((item) => (
                 <li key={item.label}>
                   <a
                     href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-sm text-primary-300 hover:text-white transition-colors inline-flex items-center gap-1"
                   >
                     {item.label}
-                    {item.href === '#' && <ExternalLink className="w-3 h-3" />}
+                    <ExternalLink className="w-3 h-3" />
                   </a>
                 </li>
               ))}

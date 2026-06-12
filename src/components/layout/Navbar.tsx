@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Menu, X, Heart } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  showInternalLinks?: boolean
+}
+
+const Navbar: React.FC<NavbarProps> = ({ showInternalLinks = false }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const location = useLocation()
@@ -15,12 +19,16 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const navLinks = [
+  const allNavLinks = [
     { path: '/', label: 'Inicio' },
     { path: '/evaluar', label: 'Evaluar' },
     { path: '/dashboard', label: 'Dashboard' },
     { path: '/admin', label: 'Admin' },
   ]
+
+  const navLinks = showInternalLinks
+    ? allNavLinks
+    : allNavLinks.filter((link) => !['/dashboard', '/admin'].includes(link.path))
 
   const isActive = (path: string) => location.pathname === path
 
@@ -36,7 +44,7 @@ const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <Heart className="w-8 h-8 text-accent" />
+            <img src="/logo.png" alt="ACRUX" className="h-8 w-auto" />
             <span className="font-display text-xl font-bold text-primary-900">
               PULSO-H
             </span>

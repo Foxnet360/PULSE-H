@@ -109,7 +109,7 @@ const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) => {
             {/* Footer */}
             <div className="p-6 border-t border-primary-100 flex items-center justify-between bg-primary-50">
               <a
-                href="/privacidad"
+                href="https://acrux.life/privacidad"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-accent hover:text-accent-dark flex items-center gap-1 transition-colors"

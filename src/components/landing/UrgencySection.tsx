@@ -13,7 +13,7 @@ const UrgencySection: React.FC = () => {
   }, [])
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-accent">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-primary">
       <div className="max-w-4xl mx-auto text-center text-white">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -21,7 +21,7 @@ const UrgencySection: React.FC = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 rounded-full text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/30 rounded-full text-sm font-medium mb-6">
             <Timer className="w-4 h-4" />
             <span>Oferta de lanzamiento</span>
           </div>
@@ -30,7 +30,7 @@ const UrgencySection: React.FC = () => {
             Primeros 500 diagnósticos gratis
           </h2>
 
-          <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg text-white mb-8 max-w-2xl mx-auto">
             Estamos celebrando el lanzamiento de PULSO-H. Los primeros 500 diagnósticos
             organizacionales son completamente gratuitos. No requiere tarjeta de crédito.
           </p>
@@ -38,10 +38,10 @@ const UrgencySection: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
             <div className="bg-white/20 backdrop-blur-sm rounded-2xl px-8 py-4">
               <div className="text-4xl font-bold">{count}</div>
-              <div className="text-sm text-white/80">cupos disponibles</div>
+              <div className="text-sm text-white">cupos disponibles</div>
             </div>
 
-            <div className="text-white/60 text-sm">
+            <div className="text-white text-sm">
               de 500 totales
             </div>
           </div>
@@ -54,7 +54,7 @@ const UrgencySection: React.FC = () => {
             <ArrowRight className="w-5 h-5" />
           </a>
 
-          <p className="text-sm text-white/60 mt-4">
+          <p className="text-sm text-white mt-4">
             Sin compromiso. Cancela cuando quieras.
           </p>
         </motion.div>

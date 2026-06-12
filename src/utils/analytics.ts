@@ -82,6 +82,11 @@ export const trackLeadCaptureComplete = (profile: string, marketingConsent: bool
     profile,
     marketing_consent: marketingConsent,
   })
+  // Standard GA4 conversion event for unified ecosystem tracking
+  trackEvent('generate_lead', {
+    lead_source: 'pulse-h',
+    profile,
+  })
 }
 
 export const trackThankYouView = (irp: number): void => {
