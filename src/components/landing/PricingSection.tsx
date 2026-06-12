@@ -134,13 +134,13 @@ const PricingSection: React.FC = () => {
               }`}
             >
               {plan.highlighted && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-accent text-white text-xs font-semibold rounded-full">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-white text-xs font-semibold rounded-full">
                   Más popular
                 </div>
               )}
 
               <div className="flex items-center gap-2 mb-4">
-                <plan.icon className={`w-5 h-5 ${plan.highlighted ? 'text-accent' : 'text-primary-400'}`} />
+                <plan.icon className={`w-5 h-5 ${plan.highlighted ? 'text-white' : 'text-primary-400'}`} />
                 <span className={`font-display text-lg font-bold ${plan.highlighted ? 'text-white' : 'text-primary-900'}`}>
                   {plan.name}
                 </span>
@@ -165,9 +165,9 @@ const PricingSection: React.FC = () => {
                     {feature.included ? (
                       <Check className={`w-4 h-4 flex-shrink-0 ${plan.highlighted ? 'text-green-400' : 'text-green-500'}`} />
                     ) : (
-                      <X className="w-4 h-4 text-primary-300 flex-shrink-0" />
+                      <X className="w-4 h-4 text-primary-700 flex-shrink-0" />
                     )}
-                    <span className={feature.included ? '' : 'text-primary-400'}>
+                    <span className={feature.included ? '' : 'text-primary-900'}>
                       {feature.text}
                     </span>
                   </li>
@@ -178,7 +178,7 @@ const PricingSection: React.FC = () => {
                 href="/evaluar"
                 className={`block text-center py-3 px-4 rounded-xl font-semibold transition-colors ${
                   plan.highlighted
-                    ? 'bg-accent text-white hover:bg-accent-light'
+                    ? 'bg-primary text-white hover:bg-primary-700'
                     : 'bg-primary-100 text-primary-900 hover:bg-primary-200'
                 }`}
               >
@@ -200,7 +200,7 @@ const PricingSection: React.FC = () => {
           </p>
           <a
             href="mailto:contacto@acruxconsultores.com"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-semibold rounded-xl hover:bg-accent-dark transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary-700 transition-colors"
           >
             Contactar con ventas
             <ArrowRight className="w-5 h-5" />

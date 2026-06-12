@@ -20,7 +20,7 @@ const HeroSection: React.FC = () => {
           transition={{ duration: 0.6 }}
         >
           {/* Badge principal */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 rounded-full text-accent text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 rounded-full text-primary-900 text-sm font-medium mb-6">
             <Heart className="w-4 h-4" />
             <span>Desarrollado por psicólogos organizacionales de ACRUX</span>
           </div>
@@ -38,7 +38,7 @@ const HeroSection: React.FC = () => {
           className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-primary-900 mb-6 leading-tight"
         >
           Descubre el{' '}
-          <span className="text-accent">pulso</span>
+          <span className="text-primary-900">pulso</span>
           {' '}de tu bienestar laboral
         </motion.h1>
 
@@ -61,7 +61,7 @@ const HeroSection: React.FC = () => {
         >
           <Link
             to="/evaluar"
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-accent text-white font-semibold rounded-xl hover:bg-accent-dark transition-all shadow-lg shadow-accent/20 hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-0.5"
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-accent text-primary-900 font-bold rounded-xl hover:bg-accent-dark transition-all shadow-lg shadow-accent/20 hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-0.5"
           >
             Comenzar diagnóstico gratuito
             <ArrowRight className="w-5 h-5" />
@@ -89,7 +89,7 @@ const HeroSection: React.FC = () => {
             { icon: BarChart3, label: 'Basado en evidencia', sublabel: 'MBI-HSS validado' },
           ].map((item, index) => (
             <div key={index} className="flex items-center gap-3 px-4 py-3 bg-white/60 backdrop-blur-sm rounded-xl">
-              <item.icon className="w-5 h-5 text-accent" />
+              <item.icon className="w-5 h-5 text-primary-900" />
               <div className="text-left">
                 <div className="font-semibold text-primary-900">{item.label}</div>
                 <div className="text-primary-500 text-xs">{item.sublabel}</div>

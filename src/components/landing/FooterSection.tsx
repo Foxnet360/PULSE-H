@@ -1,5 +1,5 @@
 import React from 'react'
-import { Heart, Mail, Phone, MapPin, ExternalLink } from 'lucide-react'
+import { Heart, Mail, MapPin, ExternalLink } from 'lucide-react'
 
 const FooterSection: React.FC = () => {
   return (
@@ -26,14 +26,6 @@ const FooterSection: React.FC = () => {
                 hola@acrux.life
               </a>
               
-              <a
-                href="tel:+573001234567"
-                className="flex items-center gap-2 text-sm text-primary-300 hover:text-white transition-colors"
-              >
-                <Phone className="w-4 h-4" />
-                +57 300 123 4567
-              </a>
-              
               <div className="flex items-center gap-2 text-sm text-primary-300">
                 <MapPin className="w-4 h-4" />
                 Bogotá, Colombia
@@ -48,8 +40,6 @@ const FooterSection: React.FC = () => {
               {[
                 { label: 'Evaluación individual', href: '/evaluar' },
                 { label: 'Evaluación organizacional', href: '/evaluar' },
-                { label: 'Dashboard', href: '/dashboard' },
-                { label: 'Resultados', href: '/resultados' },
               ].map((item) => (
                 <li key={item.label}>
                   <a

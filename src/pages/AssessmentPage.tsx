@@ -155,7 +155,7 @@ const AssessmentPage: React.FC = () => {
       <div className="max-w-3xl mx-auto px-4 py-8 pt-24">
         <div className="bg-white rounded-2xl shadow-sm border border-primary-100 p-8">
           <div className="text-center mb-8">
-            <Heart className="w-16 h-16 text-accent mx-auto mb-4" />
+            <Heart className="w-16 h-16 text-primary-900 mx-auto mb-4" />
             <h1 className="font-display text-3xl font-bold text-primary-900 mb-4">
               Bienvenido a PULSO-H
             </h1>
@@ -194,7 +194,7 @@ const AssessmentPage: React.FC = () => {
           <div className="space-y-4 mb-8">
             <div className="flex items-start gap-3 p-4 bg-primary-50 rounded-xl">
               <div className="w-8 h-8 bg-accent/10 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-accent font-bold">1</span>
+                <span className="text-primary-900 font-bold">1</span>
               </div>
               <div>
                 <h3 className="font-medium text-primary-900">6 módulos de evaluación</h3>
@@ -204,7 +204,7 @@ const AssessmentPage: React.FC = () => {
 
             <div className="flex items-start gap-3 p-4 bg-primary-50 rounded-xl">
               <div className="w-8 h-8 bg-accent/10 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-accent font-bold">2</span>
+                <span className="text-primary-900 font-bold">2</span>
               </div>
               <div>
                 <h3 className="font-medium text-primary-900">100% anónimo</h3>
@@ -214,7 +214,7 @@ const AssessmentPage: React.FC = () => {
 
             <div className="flex items-start gap-3 p-4 bg-primary-50 rounded-xl">
               <div className="w-8 h-8 bg-accent/10 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-accent font-bold">3</span>
+                <span className="text-primary-900 font-bold">3</span>
               </div>
               <div>
                 <h3 className="font-medium text-primary-900">Plan de acción personalizado</h3>
@@ -239,7 +239,7 @@ const AssessmentPage: React.FC = () => {
                 type="checkbox"
                 checked={consentGiven}
                 onChange={(e) => setConsentGiven(e.target.checked)}
-                className="mt-1 w-5 h-5 text-accent border-primary-300 rounded focus:ring-accent"
+                className="mt-1 w-5 h-5 text-primary-900 border-primary-300 rounded focus:ring-accent"
               />
               <span className="text-sm text-primary-700">
                 Entiendo que este diagnóstico es una herramienta de autoevaluación,
@@ -253,11 +253,11 @@ const AssessmentPage: React.FC = () => {
                 type="checkbox"
                 checked={gdprConsent}
                 onChange={(e) => setGdprConsent(e.target.checked)}
-                className="mt-1 w-5 h-5 text-accent border-primary-300 rounded focus:ring-accent"
+                className="mt-1 w-5 h-5 text-primary-900 border-primary-300 rounded focus:ring-accent"
               />
               <span className="text-sm text-primary-700">
                 Acepto el tratamiento de datos según la{' '}
-                <a href="https://acrux.life/privacidad" target="_blank" rel="noopener noreferrer" className="text-accent underline">
+                <a href="https://acrux.life/privacidad" target="_blank" rel="noopener noreferrer" className="text-primary-900 underline">
                   política de privacidad
                 </a>
                 . *
@@ -267,7 +267,7 @@ const AssessmentPage: React.FC = () => {
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
-                className="mt-1 w-5 h-5 text-accent border-primary-300 rounded focus:ring-accent"
+                className="mt-1 w-5 h-5 text-primary-900 border-primary-300 rounded focus:ring-accent"
               />
               <span className="text-sm text-primary-700">
                 Deseo recibir recomendaciones de bienestar laboral (opcional).
@@ -284,7 +284,7 @@ const AssessmentPage: React.FC = () => {
             <button
               onClick={handleStart}
               disabled={!consentGiven || !gdprConsent}
-              className="w-full mt-4 px-8 py-4 bg-accent text-white font-semibold rounded-xl hover:bg-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full mt-4 px-8 py-4 bg-primary text-white font-semibold rounded-xl hover:bg-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               Comenzar evaluación
               <ArrowRight className="w-5 h-5" />
@@ -320,7 +320,7 @@ const AssessmentPage: React.FC = () => {
     <div className="max-w-3xl mx-auto px-4 py-8 pt-24">
       {/* Toast Notification */}
       {showToast && (
-        <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-40 bg-accent text-white px-6 py-3 rounded-xl shadow-lg animate-bounce">
+        <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-40 bg-primary text-white px-6 py-3 rounded-xl shadow-lg animate-bounce">
           <p className="text-sm font-medium">{showToast}</p>
         </div>
       )}
@@ -440,7 +440,7 @@ const AssessmentPage: React.FC = () => {
 
         <button
           onClick={handleNext}
-          className="px-6 py-3 bg-accent text-white font-medium rounded-xl hover:bg-accent-dark focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:outline-none transition-colors flex items-center gap-2 active:scale-[0.98] motion-reduce:active:scale-100"
+          className="px-6 py-3 bg-primary text-white font-medium rounded-xl hover:bg-accent-dark focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:outline-none transition-colors flex items-center gap-2 active:scale-[0.98] motion-reduce:active:scale-100"
         >
           {currentModule === assessmentModules.length - 1 ? 'Finalizar' : 'Siguiente'}
           <ArrowRight className="w-4 h-4" />

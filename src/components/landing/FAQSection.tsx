@@ -64,7 +64,7 @@ const FAQSection: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 text-accent rounded-full text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 text-primary-900 rounded-full text-sm font-medium mb-6">
             <HelpCircle className="w-4 h-4" />
             <span>FAQ</span>
           </div>
@@ -136,7 +136,7 @@ const FAQSection: React.FC = () => {
           </p>
           <a
             href="mailto:contacto@acruxconsultores.com"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-semibold rounded-xl hover:bg-accent-dark transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-primary-900 font-bold rounded-xl hover:bg-accent-dark transition-colors"
           >
             Contactar soporte
             <ArrowRight className="w-5 h-5" />

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { Settings, Link2, BarChart3, Calendar, Users, TrendingUp, Star, ChevronDown, Filter } from 'lucide-react'
 import { useLinkManagement } from '../hooks/useLinkManagement'
+import { useAuth } from '../context/AuthContext'
 import LinkGenerator from '../components/admin/LinkGenerator'
 import EvaluationList from '../components/admin/EvaluationList'
 
@@ -103,6 +104,10 @@ const AdminPage: React.FC = () => {
   const [stats, setStats] = useState<Stats | null>(null)
   const [funnel, setFunnel] = useState<FunnelData | null>(null)
   const [conversionRates, setConversionRates] = useState<Record<string, number>>({})
+  const [password, setPassword] = useState('')
+  const [loginError, setLoginError] = useState('')
+
+  const { isAuthenticated, login } = useAuth()
 
   useEffect(() => {
     fetchAppointments()
@@ -534,7 +539,48 @@ const AdminPage: React.FC = () => {
                             { label: 'Re-evaluación', sent: sequence.email_5_sent, date: sequence.email_5_sent_at },
                           ]
                           
-                          return (
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoginError('')
+    if (!login(password)) {
+      setLoginError('Contraseña incorrecta. Intenta de nuevo.')
+    }
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4 py-8 pt-24 bg-surface">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-primary-100 p-8">
+          <h1 className="font-display text-2xl font-bold text-primary-900 mb-2">
+            Acceso administrativo
+          </h1>
+          <p className="text-primary-600 mb-6">
+            Ingresa la contraseña para continuar.
+          </p>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Contraseña"
+              className="w-full px-4 py-3 border border-primary-200 rounded-lg focus:ring-2 focus:ring-accent focus:outline-none"
+            />
+            {loginError && (
+              <p className="text-red-600 text-sm">{loginError}</p>
+            )}
+            <button
+              type="submit"
+              className="w-full bg-primary text-white font-bold py-3 rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Ingresar
+            </button>
+          </form>
+        </div>
+      </div>
+    )
+  }
+
+  return (
                             <div className="grid grid-cols-5 gap-2">
                               {emails.map((email, idx) => (
                                 <div key={idx} className={`text-center p-2 rounded-lg ${email.sent ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>

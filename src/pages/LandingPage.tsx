@@ -33,7 +33,7 @@ const LandingPage: React.FC = () => {
           <p className="text-primary-700 text-sm">
             <span className="font-semibold">Parte de ACRUX Consultores.</span>{' '}
             La evaluación de bienestar laboral es un pilar fundamental de nuestra{' '}
-            <a href="https://acrux.life/soluciones/transformacion-cultural" target="_blank" rel="noopener noreferrer" className="text-accent underline">
+            <a href="https://acrux.life/soluciones/transformacion-cultural" target="_blank" rel="noopener noreferrer" className="text-primary-900 underline">
               Transformación Cultural
             </a>.
           </p>
@@ -70,7 +70,7 @@ const LandingPage: React.FC = () => {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="text-center p-8 bg-primary-50 rounded-2xl"
               >
-                <div className="font-display text-5xl font-bold text-accent mb-3">{stat.number}</div>
+                <div className="font-display text-5xl font-bold text-primary-900 mb-3">{stat.number}</div>
                 <div className="text-primary-900 font-semibold mb-2">{stat.label}</div>
                 <div className="text-primary-500 text-sm">Fuente: {stat.source}</div>
               </motion.div>
@@ -135,9 +135,9 @@ const LandingPage: React.FC = () => {
                 <div className="bg-white p-8 rounded-2xl shadow-sm border border-primary-100 h-full">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center">
-                      <item.icon className="w-6 h-6 text-accent" />
+                      <item.icon className="w-6 h-6 text-primary-900" />
                     </div>
-                    <div className="text-4xl font-display font-bold text-primary-200">
+                    <div className="text-4xl font-display font-bold text-primary-400">
                       {item.step}
                     </div>
                   </div>
@@ -206,7 +206,7 @@ const LandingPage: React.FC = () => {
             
             <Link
               to="/evaluar"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-accent text-white font-semibold rounded-xl hover:bg-accent-light transition-colors shadow-lg"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-white font-semibold rounded-xl hover:bg-primary-700 transition-colors shadow-lg"
             >
               Comenzar evaluación gratuita
               <ArrowRight className="w-5 h-5" />
