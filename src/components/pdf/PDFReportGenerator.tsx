@@ -12,12 +12,14 @@ interface PDFReportGeneratorProps {
     medium: Intervention
   } | null
   watermark?: boolean
+  children?: (generatePDF: () => void, isGenerating: boolean, progress: number) => React.ReactNode
 }
 
 const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
   result,
   interventions,
   watermark = false,
+  children,
 }) => {
   const [isGenerating, setIsGenerating] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -179,6 +181,22 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       }, 1000)
     }
   }, [result, interventions, watermark])
+
+  if (children) {
+    return (
+      <div>
+        {children(generatePDF, isGenerating, progress)}
+        {isGenerating && (
+          <div className="mt-4 w-full bg-primary-100 rounded-full h-2">
+            <div
+              className="bg-accent h-2 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        )}
+      </div>
+    )
+  }
 
   return (
     <div>
