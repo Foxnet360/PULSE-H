@@ -14,11 +14,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Database configuration - Hostinger Production
-define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
-define('DB_NAME', $_ENV['DB_NAME'] ?? 'u554044004_pulso_h');
-define('DB_USER', $_ENV['DB_USER'] ?? 'u554044004_acruxuser_ph');
-define('DB_PASS', $_ENV['DB_PASS'] ?? '4Crux2026*');
+// Load environment variables from .env file if it exists
+function loadEnv($dir) {
+    $path = rtrim($dir, '/') . '/.env';
+    if (!file_exists($path)) {
+        return;
+    }
+    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if (empty($line) || strpos($line, '#') === 0) {
+            continue;
+        }
+        $parts = explode('=', $line, 2);
+        if (count($parts) === 2) {
+            $key = trim($parts[0]);
+            $val = trim($parts[1]);
+            $val = trim($val, "\"'");
+            if (!array_key_exists($key, $_SERVER) && !array_key_exists($key, $_ENV)) {
+                putenv("{$key}={$val}");
+                $_ENV[$key] = $val;
+                $_SERVER[$key] = $val;
+            }
+        }
+    }
+}
+
+// Load environment variables from root directory
+loadEnv(__DIR__ . '/..');
+
+// Database configuration
+define('DB_HOST', $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?: 'localhost');
+define('DB_NAME', $_ENV['DB_NAME'] ?? getenv('DB_NAME') ?: 'pulso_h');
+define('DB_USER', $_ENV['DB_USER'] ?? getenv('DB_USER') ?: 'root');
+define('DB_PASS', $_ENV['DB_PASS'] ?? getenv('DB_PASS') ?: '');
 
 // Rate limiting
 define('RATE_LIMIT_REQUESTS', 100);
@@ -98,13 +127,13 @@ function sanitizeString($str) {
     return htmlspecialchars(strip_tags(trim($str)), ENT_QUOTES, 'UTF-8');
 }
 
-// SMTP Email Configuration - Unified with ACRUX.life and DIGITAL-H
-$SMTP_HOST = 'smtp.hostinger.com';
-$SMTP_PORT = 465;
-$SMTP_SECURE = true; // SSL
-$SMTP_USER = 'hola@acrux.life';
-$SMTP_PASS = '4Crux2026*';
-$SMTP_FROM = 'PULSO-H <hola@acrux.life>';
+// SMTP Email Configuration - Loaded from environment
+$SMTP_HOST = $_ENV['SMTP_HOST'] ?? getenv('SMTP_HOST') ?: 'localhost';
+$SMTP_PORT = intval($_ENV['SMTP_PORT'] ?? getenv('SMTP_PORT') ?: 1025);
+$SMTP_SECURE = filter_var($_ENV['SMTP_SECURE'] ?? getenv('SMTP_SECURE') ?: false, FILTER_VALIDATE_BOOLEAN);
+$SMTP_USER = $_ENV['SMTP_USER'] ?? getenv('SMTP_USER') ?: '';
+$SMTP_PASS = $_ENV['SMTP_PASS'] ?? getenv('SMTP_PASS') ?: '';
+$SMTP_FROM = $_ENV['SMTP_FROM'] ?? getenv('SMTP_FROM') ?: 'PULSO-H <no-reply@localhost>';
 
 function sendEmail($to, $subject, $html, $text = null): array {
     global $SMTP_FROM;
