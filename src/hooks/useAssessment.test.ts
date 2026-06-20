@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useAssessment } from '../hooks/useAssessment'
 import { assessmentModules } from '../data/assessmentData'
@@ -165,7 +165,8 @@ describe('useAssessment Integration', () => {
     })
     
     expect(localStorage.setItem).toHaveBeenCalled()
-    const lastCall = (localStorage.setItem as any).mock.calls[(localStorage.setItem as any).mock.calls.length - 1]
+    const setItemMock = vi.mocked(localStorage.setItem)
+    const lastCall = setItemMock.mock.calls[setItemMock.mock.calls.length - 1]
     expect(lastCall[0]).toBe('pulso-h-assessment')
     
     const saved = JSON.parse(lastCall[1])
@@ -188,7 +189,7 @@ describe('useAssessment Integration', () => {
       currentModule: 2,
     }
     
-    ;(localStorage.getItem as any).mockReturnValue(JSON.stringify(savedData))
+    vi.mocked(localStorage.getItem).mockReturnValue(JSON.stringify(savedData))
     
     const { result } = renderHook(() => useAssessment())
     

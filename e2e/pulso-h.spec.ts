@@ -443,7 +443,7 @@ test.describe('PULSO-H E2E Tests', () => {
     
     // Check for landing_view event in console or dataLayer
     const consoleLogs = await page.evaluate(() => {
-      return (window as any).dataLayer || []
+      return (window as unknown as { dataLayer?: unknown[] }).dataLayer || []
     })
     
     // Start assessment

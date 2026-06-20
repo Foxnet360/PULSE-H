@@ -318,7 +318,8 @@ export interface EmailPersonalization {
   assessment_url?: string;
 }
 
-export const generateEmailSequence = (_personalization: EmailPersonalization) => {
+export const generateEmailSequence = (personalization: EmailPersonalization) => {
+  void personalization
   const now = new Date()
   return emailTemplates.map(template => ({
     template,

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAssessment } from '../hooks/useAssessment'
+import { AssessmentResult } from '../types/assessment'
 import { assessmentModules } from '../data/assessmentData'
 import CircularProgress from '../components/ui/CircularProgress'
 import LeadCaptureModal from '../components/leads/LeadCaptureModal'
@@ -29,7 +30,7 @@ const AssessmentPage: React.FC = () => {
   const [consentGiven, setConsentGiven] = useState(false)
   const [gdprConsent, setGdprConsent] = useState(false)
   const [showLeadCapture, setShowLeadCapture] = useState(false)
-  const [assessmentResult, setAssessmentResult] = useState<any>(null)
+  const [assessmentResult, setAssessmentResult] = useState<AssessmentResult | null>(null)
   const [showToast, setShowToast] = useState<string | null>(null)
 
   const currentModuleData = assessmentModules[currentModule]
@@ -39,6 +40,7 @@ const AssessmentPage: React.FC = () => {
     if (!assessment) {
       startAssessment()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleStart = () => {
@@ -123,7 +125,7 @@ const AssessmentPage: React.FC = () => {
     })
     
     // Track lead capture complete
-    trackLeadCaptureComplete(assessmentResult?.profileName, marketingConsent)
+    trackLeadCaptureComplete(assessmentResult?.profileName || '', marketingConsent)
     
     // Navigate to Thank You Page after successful capture
     navigate('/gracias')

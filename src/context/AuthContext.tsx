@@ -25,7 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [])
 
   const login = useCallback((password: string) => {
-    const expected = ((import.meta as any).env?.VITE_PULSO_ADMIN_PASSWORD) || FALLBACK_PASSWORD
+    const expected = ((import.meta as unknown as { env?: { VITE_PULSO_ADMIN_PASSWORD?: string } }).env?.VITE_PULSO_ADMIN_PASSWORD) || FALLBACK_PASSWORD
     if (password === expected) {
       localStorage.setItem(AUTH_TOKEN_KEY, 'authenticated')
       setIsAuthenticated(true)
@@ -46,6 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = (): AuthContextValue => {
   const ctx = useContext(AuthContext)
   if (!ctx) {

@@ -19,7 +19,7 @@ const getStoredSchedule = (): ScheduledEmail[] => {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (!stored) return []
     const parsed = JSON.parse(stored)
-    return parsed.map((e: any) => ({
+    return parsed.map((e: Omit<ScheduledEmail, 'scheduledDate' | 'sentAt'> & { scheduledDate: string; sentAt?: string }) => ({
       ...e,
       scheduledDate: new Date(e.scheduledDate),
       sentAt: e.sentAt ? new Date(e.sentAt) : undefined,

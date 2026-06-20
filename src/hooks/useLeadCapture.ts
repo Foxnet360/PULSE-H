@@ -18,7 +18,21 @@ export interface LeadEvent {
   type: 'assessment_complete' | 'pdf_download' | 'email_open' | 'cta_click' | 'call_scheduled'
   timestamp: Date
   score: number
-  data?: Record<string, any>
+  data?: Record<string, unknown>
+}
+
+export interface SyncPayload {
+  email: string
+  name?: string | null
+  organization?: string | null
+  profile?: string
+  score?: number
+  gdpr_consent?: boolean
+  marketing_consent?: boolean
+  events: Array<{
+    type: string
+    data?: Record<string, unknown>
+  }>
 }
 
 const STORAGE_KEY = 'pulso-h-leads'
@@ -30,10 +44,10 @@ const getStoredLeads = (): Lead[] => {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (!stored) return []
     const parsed = JSON.parse(stored)
-    return parsed.map((l: any) => ({
+    return parsed.map((l: Omit<Lead, 'createdAt' | 'events'> & { createdAt: string; events?: Array<Omit<LeadEvent, 'timestamp'> & { timestamp: string }> }) => ({
       ...l,
       createdAt: new Date(l.createdAt),
-      events: l.events?.map((e: any) => ({
+      events: l.events?.map((e: Omit<LeadEvent, 'timestamp'> & { timestamp: string }) => ({
         ...e,
         timestamp: new Date(e.timestamp),
       })) || [],
@@ -47,7 +61,7 @@ const saveLeads = (leads: Lead[]) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(leads))
 }
 
-const getOfflineQueue = (): any[] => {
+const getOfflineQueue = (): SyncPayload[] => {
   try {
     const stored = localStorage.getItem(OFFLINE_QUEUE_KEY)
     return stored ? JSON.parse(stored) : []
@@ -56,7 +70,7 @@ const getOfflineQueue = (): any[] => {
   }
 }
 
-const saveOfflineQueue = (queue: any[]) => {
+const saveOfflineQueue = (queue: SyncPayload[]) => {
   localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue))
 }
 
@@ -96,7 +110,7 @@ export const useLeadCapture = () => {
     syncQueue()
   }, [])
 
-  const syncToBackend = async (leadData: any): Promise<{ success: boolean; id?: number }> => {
+  const syncToBackend = async (leadData: SyncPayload): Promise<{ success: boolean; id?: number }> => {
     try {
       const response = await fetch(`${API_BASE_URL}/lead.php`, {
         method: 'POST',

@@ -6,7 +6,7 @@
 export interface DataPoint {
   id: string
   values: number[]
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export interface Cluster {
@@ -40,7 +40,7 @@ function initializeCentroids(points: DataPoint[], k: number): number[][] {
   const used = new Set<number>()
   
   // First centroid: random
-  let firstIndex = Math.floor(Math.random() * points.length)
+  const firstIndex = Math.floor(Math.random() * points.length)
   centroids.push([...points[firstIndex].values])
   used.add(firstIndex)
   
@@ -208,7 +208,7 @@ export function findOptimalK(points: DataPoint[], minK = 2, maxK = 5): { k: numb
     try {
       const result = kmeans(points, k)
       results.push(result)
-    } catch (e) {
+    } catch {
       break
     }
   }

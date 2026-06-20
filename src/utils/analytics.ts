@@ -22,12 +22,16 @@ interface GA4EventParams {
   [key: string]: string | number | boolean | undefined
 }
 
+interface WindowWithGtag extends Window {
+  gtag?: (type: string, name: string, params?: GA4EventParams) => void
+}
+
 /**
  * Track a GA4 event
  */
 export const trackEvent = (eventName: string, params?: GA4EventParams): void => {
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', eventName, params)
+  if (typeof window !== 'undefined' && (window as unknown as WindowWithGtag).gtag) {
+    (window as unknown as WindowWithGtag).gtag!('event', eventName, params)
   }
 }
 

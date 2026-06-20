@@ -6,8 +6,8 @@
 import * as Sentry from '@sentry/react'
 
 export const initSentry = () => {
-  // @ts-ignore - Vite env types
-  const dsn = import.meta.env?.VITE_SENTRY_DSN
+  const env = (import.meta as unknown as { env?: Record<string, string | undefined> }).env
+  const dsn = env?.VITE_SENTRY_DSN
   
   if (!dsn) {
     console.warn('Sentry DSN not configured. Error tracking disabled.')
@@ -16,10 +16,8 @@ export const initSentry = () => {
 
   Sentry.init({
     dsn,
-    // @ts-ignore - Vite env types
-    environment: import.meta.env?.MODE || 'production',
-    // @ts-ignore - Vite env types
-    release: import.meta.env?.VITE_APP_VERSION || '1.0.0',
+    environment: env?.MODE || 'production',
+    release: env?.VITE_APP_VERSION || '1.0.0',
     
     // Performance monitoring
     integrations: [

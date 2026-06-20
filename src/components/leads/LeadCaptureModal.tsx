@@ -50,7 +50,7 @@ const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
         concernArea
       })
       setSubmitted(true)
-    } catch (err) {
+    } catch {
       setError('Hubo un error al guardar tus datos. Por favor intenta de nuevo.')
     } finally {
       setIsSubmitting(false)

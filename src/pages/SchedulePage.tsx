@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { Calendar, Clock, ChevronLeft, ChevronRight, Check, Loader2 } from 'lucide-react'
@@ -14,6 +14,11 @@ interface DaySlots {
   [date: string]: TimeSlot[]
 }
 
+interface AppointmentData {
+  appointment_date: string
+  appointment_time: string
+}
+
 const SchedulePage: React.FC = () => {
   const navigate = useNavigate()
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
@@ -23,21 +28,11 @@ const SchedulePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [isBooking, setIsBooking] = useState(false)
   const [bookingComplete, setBookingComplete] = useState(false)
-  const [appointmentData, setAppointmentData] = useState<any>(null)
+  const [appointmentData, setAppointmentData] = useState<AppointmentData | null>(null)
 
   const leadEmail = sessionStorage.getItem('pulso-h-lead-email') || ''
 
-  useEffect(() => {
-    const leadId = sessionStorage.getItem('pulso-h-lead-id')
-    if (!leadId) {
-      navigate('/evaluar')
-      return
-    }
-
-    fetchAvailability()
-  }, [currentWeek, navigate])
-
-  const fetchAvailability = async () => {
+  const fetchAvailability = useCallback(async () => {
     setIsLoading(true)
     try {
       const startDate = new Date()
@@ -58,7 +53,17 @@ const SchedulePage: React.FC = () => {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [currentWeek])
+
+  useEffect(() => {
+    const leadId = sessionStorage.getItem('pulso-h-lead-id')
+    if (!leadId) {
+      navigate('/evaluar')
+      return
+    }
+
+    fetchAvailability()
+  }, [currentWeek, navigate, fetchAvailability])
 
   const getWeekDays = () => {
     const days = []

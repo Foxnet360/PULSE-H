@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import { Download, Loader2 } from 'lucide-react'
-import { AssessmentResult, Intervention } from '../../types/assessment'
+import { AssessmentResult, Intervention, DimensionInterpretation } from '../../types/assessment'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 
@@ -74,7 +74,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           <div style="margin-bottom: 24px;">
             <h2 style="font-family: 'Exo 2', sans-serif; font-size: 20px; color: #1b2a4a; margin: 0 0 16px 0;">Dimensiones Evaluadas</h2>
             
-            ${Object.entries(result.dimensions).map(([key, dim]: [string, any]) => `
+            ${Object.entries(result.dimensions).map(([key, dim]: [string, DimensionInterpretation]) => `
               <div style="margin-bottom: 12px;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
                   <span style="font-size: 13px; font-weight: 500; color: #1b2a4a;">${getDimensionLabel(key)}</span>

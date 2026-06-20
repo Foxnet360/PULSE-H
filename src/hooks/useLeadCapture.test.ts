@@ -20,10 +20,10 @@ describe('useLeadCapture', () => {
     const { result } = renderHook(() => useLeadCapture())
 
     const mockResponse = { success: true, id: 123 }
-    ;(fetch as any).mockResolvedValueOnce({
+    vi.mocked(fetch).mockResolvedValueOnce({
       ok: true,
       json: async () => mockResponse,
-    })
+    } as Response)
 
     await act(async () => {
       await result.current.captureLead('test@example.com', {
@@ -46,10 +46,10 @@ describe('useLeadCapture', () => {
 
     // First capture a lead
     const mockResponse = { success: true, id: 123 }
-    ;(fetch as any).mockResolvedValueOnce({
+    vi.mocked(fetch).mockResolvedValueOnce({
       ok: true,
       json: async () => mockResponse,
-    })
+    } as Response)
 
     await act(async () => {
       await result.current.captureLead('test@example.com', {
@@ -76,7 +76,7 @@ describe('useLeadCapture', () => {
     const { result } = renderHook(() => useLeadCapture())
 
     // Mock failed fetch - need to mock twice (once for syncQueue on mount, once for capture)
-    ;(fetch as any)
+    vi.mocked(fetch)
       .mockRejectedValueOnce(new Error('Network error'))
       .mockRejectedValueOnce(new Error('Network error'))
 
@@ -109,10 +109,10 @@ describe('useLeadCapture', () => {
 
     for (const lead of leads) {
       const mockResponse = { success: true, id: Math.random() }
-      ;(fetch as any).mockResolvedValueOnce({
+      vi.mocked(fetch).mockResolvedValueOnce({
         ok: true,
         json: async () => mockResponse,
-      })
+      } as Response)
 
       await act(async () => {
         await result.current.captureLead(lead.email, {

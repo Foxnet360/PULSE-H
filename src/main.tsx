@@ -7,8 +7,7 @@ import './index.css'
 import { initSentry } from './utils/sentry.ts'
 
 // Initialize error tracking (only in production)
-// @ts-ignore - Vite env types
-if (import.meta.env?.PROD) {
+if ((import.meta as unknown as { env?: { PROD?: boolean } }).env?.PROD) {
   initSentry()
 }
 
