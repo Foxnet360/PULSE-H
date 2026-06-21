@@ -59,9 +59,9 @@ const FunnelRoutes: React.FC = () => (
               </RequireLead>
             </PageWrapper>
           } />
-          <Route path="/dashboard" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/admin" element={<Navigate to="/admin" replace />} />
-          <Route path="/privacidad" element={<Navigate to="/privacidad" replace />} />
+          <Route path="/dashboard" element={<PageWrapper><DashboardPage /></PageWrapper>} />
+          <Route path="/admin" element={<PageWrapper><AdminPage /></PageWrapper>} />
+          <Route path="/privacidad" element={<PageWrapper><PrivacyPage /></PageWrapper>} />
           <Route path="*" element={<PageWrapper><NotFoundPage /></PageWrapper>} />
         </Routes>
       </AnimatePresence>
