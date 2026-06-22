@@ -5,9 +5,65 @@
  */
 
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+
+// CORS: solo orígenes autorizados de ACRUX (producción + desarrollo local)
+$allowedOrigins = [
+    'https://acrux.life',
+    'https://www.acrux.life',
+];
+
+// Permitir orígenes adicionales desde variable de entorno (separados por coma)
+$extraOrigins = env('ACRUX_ALLOWED_ORIGINS', '');
+if ($extraOrigins !== '') {
+    foreach (explode(',', $extraOrigins) as $o) {
+        $o = trim($o);
+        if ($o !== '') {
+            $allowedOrigins[] = $o;
+        }
+    }
+}
+
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$host = $_SERVER['HTTP_HOST'] ?? '';
+$isLocalDev = (
+    strpos($origin, 'localhost') !== false ||
+    strpos($origin, '127.0.0.1') !== false ||
+    strpos($host, 'localhost') !== false ||
+    strpos($host, '127.0.0.1') !== false
+);
+
+$isAllowed = false;
+if ($origin === '') {
+    // Peticiones sin origen (server-to-server, curl, etc.) se permiten si vienen de local
+    $isAllowed = $isLocalDev;
+} else {
+    foreach ($allowedOrigins as $allowed) {
+        if ($origin === $allowed) {
+            $isAllowed = true;
+            break;
+        }
+    }
+    if (!$isAllowed && $isLocalDev) {
+        $isAllowed = true;
+        $allowedOrigins[] = $origin; // reflejar el origen local exacto
+    }
+}
+
+if (!$isAllowed) {
+    http_response_code(403);
+    echo json_encode(['error' => 'Origin not allowed']);
+    exit;
+}
+
+// Reflejar el origen permitido (no se puede usar lista en Access-Control-Allow-Origin)
+if ($origin !== '') {
+    header("Access-Control-Allow-Origin: {$origin}");
+} elseif ($isLocalDev) {
+    header('Access-Control-Allow-Origin: http://localhost');
+}
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Vary: Origin');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
