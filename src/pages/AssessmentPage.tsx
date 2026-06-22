@@ -21,11 +21,13 @@ const AssessmentPage: React.FC<AssessmentPageProps> = ({ evaluationHash, onCompl
     assessment,
     responses,
     currentModule,
+    hasSavedProgress,
     startAssessment,
     setResponse,
     nextModule,
     prevModule,
     getResult,
+    saveProgress,
   } = useAssessment()
 
   const { captureLead } = useLeadCapture()
@@ -441,12 +443,14 @@ const AssessmentPage: React.FC<AssessmentPageProps> = ({ evaluationHash, onCompl
 
           <button
             onClick={() => {
-              alert('Tu progreso ha sido guardado. Puedes retomar desde este dispositivo.')
+              const saved = saveProgress()
+              setShowToast(saved ? 'Progreso guardado. Puedes retomar desde este dispositivo.' : 'No se pudo guardar el progreso.')
             }}
             className="px-4 py-3 text-primary-500 font-medium rounded-xl hover:bg-primary-50 transition-colors flex items-center gap-2 text-sm"
+            aria-live="polite"
           >
             <Save className="w-4 h-4" />
-            Guardar progreso
+            {hasSavedProgress ? 'Progreso guardado' : 'Guardar progreso'}
           </button>
         </div>
 

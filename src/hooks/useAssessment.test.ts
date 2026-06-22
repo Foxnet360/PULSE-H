@@ -153,29 +153,70 @@ describe('useAssessment Integration', () => {
     expect(assessmentResult).toBeNull()
   })
 
-  it('persists to localStorage', () => {
+  it('persists to localStorage keyed by assessment id', () => {
     const { result } = renderHook(() => useAssessment())
-    
+
     act(() => {
       result.current.startAssessment()
     })
-    
+
     act(() => {
       result.current.setResponse(result.current.responses[0].itemId, 4)
     })
-    
+
     expect(localStorage.setItem).toHaveBeenCalled()
     const setItemMock = vi.mocked(localStorage.setItem)
     const lastCall = setItemMock.mock.calls[setItemMock.mock.calls.length - 1]
-    expect(lastCall[0]).toBe('pulso-h-assessment')
-    
+    expect(lastCall[0]).toMatch(/pulso-h-progress-test-uuid-123/)
+
     const saved = JSON.parse(lastCall[1])
     expect(saved.assessment).toBeDefined()
     expect(saved.responses).toBeDefined()
     expect(saved.currentModule).toBeDefined()
+    expect(saved.savedAt).toBeDefined()
   })
 
-  it('loads from localStorage', () => {
+  it('exposes a saveProgress function that stores keyed by assessment id', () => {
+    const { result } = renderHook(() => useAssessment())
+
+    act(() => {
+      result.current.startAssessment('org-hash-123')
+    })
+
+    act(() => {
+      result.current.setResponse(result.current.responses[0].itemId, 4)
+    })
+
+    let saved = false
+    act(() => {
+      saved = result.current.saveProgress()
+    })
+
+    expect(saved).toBe(true)
+    expect(result.current.hasSavedProgress).toBe(true)
+
+    const setItemMock = vi.mocked(localStorage.setItem)
+    const lastCall = setItemMock.mock.calls[setItemMock.mock.calls.length - 1]
+    expect(lastCall[0]).toMatch(/pulso-h-progress-test-uuid-123/)
+
+    const savedData = JSON.parse(lastCall[1])
+    expect(savedData.assessment.evaluationHash).toBe('org-hash-123')
+    expect(savedData.responses[0].value).toBe(4)
+  })
+
+  it('returns false from saveProgress when no assessment is active', () => {
+    const { result } = renderHook(() => useAssessment())
+
+    let saved = true
+    act(() => {
+      saved = result.current.saveProgress()
+    })
+
+    expect(saved).toBe(false)
+    expect(result.current.hasSavedProgress).toBe(false)
+  })
+
+  it('loads keyed progress on mount', () => {
     const savedData = {
       assessment: {
         id: 'saved-uuid',
@@ -187,16 +228,19 @@ describe('useAssessment Integration', () => {
         { itemId: 'ae-2', value: 4 },
       ],
       currentModule: 2,
+      savedAt: new Date().toISOString(),
     }
-    
-    vi.mocked(localStorage.getItem).mockReturnValue(JSON.stringify(savedData))
-    
+
+    vi.mocked(localStorage.getItem)
+      .mockReturnValueOnce(JSON.stringify(savedData))
+
     const { result } = renderHook(() => useAssessment())
-    
-    // Wait for useEffect to run
+
     expect(result.current.assessment).not.toBeNull()
+    expect(result.current.assessment?.id).toBe('saved-uuid')
     expect(result.current.currentModule).toBe(2)
     expect(result.current.responses.length).toBe(2)
+    expect(result.current.hasSavedProgress).toBe(true)
   })
 
   it('clears assessment', () => {
