@@ -10,17 +10,24 @@ import { useAssessmentTimer } from '../hooks/useAssessmentTimer'
 import { ArrowRight, ArrowLeft, Heart, Clock, Save } from 'lucide-react'
 import { trackAssessmentStart, trackQuestionAnswered, trackAssessmentComplete, trackLeadCaptureStart, trackLeadCaptureComplete } from '../utils/analytics'
 
-const AssessmentPage: React.FC = () => {
+interface AssessmentPageProps {
+  evaluationHash?: string
+  onComplete?: (result: AssessmentResult) => void | Promise<void>
+}
+
+const AssessmentPage: React.FC<AssessmentPageProps> = ({ evaluationHash, onComplete }) => {
   const navigate = useNavigate()
   const {
     assessment,
     responses,
     currentModule,
+    hasSavedProgress,
     startAssessment,
     setResponse,
     nextModule,
     prevModule,
     getResult,
+    saveProgress,
   } = useAssessment()
 
   const { captureLead } = useLeadCapture()
@@ -38,7 +45,7 @@ const AssessmentPage: React.FC = () => {
 
   useEffect(() => {
     if (!assessment) {
-      startAssessment()
+      startAssessment(evaluationHash)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -97,7 +104,7 @@ const AssessmentPage: React.FC = () => {
     }
   }, [responses, minutesElapsed, showToast])
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentModule < assessmentModules.length - 1) {
       nextModule()
     } else {
@@ -111,6 +118,15 @@ const AssessmentPage: React.FC = () => {
         // Track assessment complete
         trackAssessmentComplete(minutesElapsed, result.profileName, result.irp)
         trackLeadCaptureStart()
+
+        // Notify parent (organization assessment wrapper) so it can persist response
+        if (onComplete) {
+          try {
+            await onComplete(result)
+          } catch (error) {
+            console.error('Failed to persist organizational response:', error)
+          }
+        }
       }
     }
   }
@@ -427,12 +443,14 @@ const AssessmentPage: React.FC = () => {
 
           <button
             onClick={() => {
-              alert('Tu progreso ha sido guardado. Puedes retomar desde este dispositivo.')
+              const saved = saveProgress()
+              setShowToast(saved ? 'Progreso guardado. Puedes retomar desde este dispositivo.' : 'No se pudo guardar el progreso.')
             }}
             className="px-4 py-3 text-primary-500 font-medium rounded-xl hover:bg-primary-50 transition-colors flex items-center gap-2 text-sm"
+            aria-live="polite"
           >
             <Save className="w-4 h-4" />
-            Guardar progreso
+            {hasSavedProgress ? 'Progreso guardado' : 'Guardar progreso'}
           </button>
         </div>
 

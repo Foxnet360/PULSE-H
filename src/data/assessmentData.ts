@@ -32,32 +32,32 @@ const propositoItems: AssessmentItem[] = [
 // Module 4: Mi Entorno (Factores Organizacionales) - 7 items
 const entornoItems: AssessmentItem[] = [
   { id: 'for-1', moduleId: 'entorno', text: 'Mi carga de trabajo es excesiva' },
-  { id: 'for-2', moduleId: 'entorno', text: 'Tengo claridad sobre mis roles y responsabilidades' },
-  { id: 'for-3', moduleId: 'entorno', text: 'Mi líder directo me apoya en mi desarrollo' },
+  { id: 'for-2', moduleId: 'entorno', text: 'Tengo claridad sobre mis roles y responsabilidades', reversed: true },
+  { id: 'for-3', moduleId: 'entorno', text: 'Mi líder directo me apoya en mi desarrollo', reversed: true },
   { id: 'for-4', moduleId: 'entorno', text: 'Existen comportamientos de violencia o acoso en mi trabajo' },
-  { id: 'for-5', moduleId: 'entorno', text: 'Mi trabajo es reconocido y valorado' },
-  { id: 'for-6', moduleId: 'entorno', text: 'Tengo control sobre cómo realizo mi trabajo' },
-  { id: 'for-7', moduleId: 'entorno', text: 'Puedo tomar descansos cuando los necesito' },
+  { id: 'for-5', moduleId: 'entorno', text: 'Mi trabajo es reconocido y valorado', reversed: true },
+  { id: 'for-6', moduleId: 'entorno', text: 'Tengo control sobre cómo realizo mi trabajo', reversed: true },
+  { id: 'for-7', moduleId: 'entorno', text: 'Puedo tomar descansos cuando los necesito', reversed: true },
 ]
 
 // Module 5: Mi Equilibrio (Conciliación Vida-Trabajo) - 6 items
 const equilibrioItems: AssessmentItem[] = [
-  { id: 'cvt-1', moduleId: 'equilibrio', text: 'Puedo dedicar tiempo suficiente a mi vida personal y familia' },
+  { id: 'cvt-1', moduleId: 'equilibrio', text: 'Puedo dedicar tiempo suficiente a mi vida personal y familia', reversed: true },
   { id: 'cvt-2', moduleId: 'equilibrio', text: 'Mi trabajo interfere con mis responsabilidades personales' },
-  { id: 'cvt-3', moduleId: 'equilibrio', text: 'Tengo flexibilidad para manejar asuntos personales durante la jornada' },
-  { id: 'cvt-4', moduleId: 'equilibrio', text: 'Puedo desconectarme del trabajo después de mi jornada' },
-  { id: 'cvt-5', moduleId: 'equilibrio', text: 'Mi horario de trabajo me permite tener una vida social satisfactoria' },
-  { id: 'cvt-6', moduleId: 'equilibrio', text: 'Siento que tengo balance entre trabajo y vida personal' },
+  { id: 'cvt-3', moduleId: 'equilibrio', text: 'Tengo flexibilidad para manejar asuntos personales durante la jornada', reversed: true },
+  { id: 'cvt-4', moduleId: 'equilibrio', text: 'Puedo desconectarme del trabajo después de mi jornada', reversed: true },
+  { id: 'cvt-5', moduleId: 'equilibrio', text: 'Mi horario de trabajo me permite tener una vida social satisfactoria', reversed: true },
+  { id: 'cvt-6', moduleId: 'equilibrio', text: 'Siento que tengo balance entre trabajo y vida personal', reversed: true },
 ]
 
-// Module 6: Mi Fortaleza (Resiliencia) - 6 items
+// Module 6: Mi Fortaleza (Resiliencia) - 6 items (all positive, reversed)
 const fortalezaItems: AssessmentItem[] = [
-  { id: 'rri-1', moduleId: 'fortaleza', text: 'Tengo personas en mi entorno que me apoyan cuando lo necesito' },
-  { id: 'rri-2', moduleId: 'fortaleza', text: 'Practico hábitos de autocuidado regularmente' },
-  { id: 'rri-3', moduleId: 'fortaleza', text: 'Puedo recuperarme rápidamente de situaciones estresantes' },
-  { id: 'rri-4', moduleId: 'fortaleza', text: 'Tengo una visión positiva de mi futuro profesional' },
-  { id: 'rri-5', moduleId: 'fortaleza', text: 'Puedo adaptarme a cambios inesperados en el trabajo' },
-  { id: 'rri-6', moduleId: 'fortaleza', text: 'Siento que tengo recursos para afrontar los desafíos laborales' },
+  { id: 'rri-1', moduleId: 'fortaleza', text: 'Tengo personas en mi entorno que me apoyan cuando lo necesito', reversed: true },
+  { id: 'rri-2', moduleId: 'fortaleza', text: 'Practico hábitos de autocuidado regularmente', reversed: true },
+  { id: 'rri-3', moduleId: 'fortaleza', text: 'Puedo recuperarme rápidamente de situaciones estresantes', reversed: true },
+  { id: 'rri-4', moduleId: 'fortaleza', text: 'Tengo una visión positiva de mi futuro profesional', reversed: true },
+  { id: 'rri-5', moduleId: 'fortaleza', text: 'Puedo adaptarme a cambios inesperados en el trabajo', reversed: true },
+  { id: 'rri-6', moduleId: 'fortaleza', text: 'Siento que tengo recursos para afrontar los desafíos laborales', reversed: true },
 ]
 
 // All modules

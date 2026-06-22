@@ -1,15 +1,25 @@
 import React from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { BarChart3, Download, Filter } from 'lucide-react'
+import { BarChart3, Download, Filter, Loader2, AlertCircle } from 'lucide-react'
 import { useDashboard } from '../hooks/useDashboard'
 import IRPCard from '../components/dashboard/IRPCard'
 import AreaRanking from '../components/dashboard/AreaRanking'
 
 const DashboardPage: React.FC = () => {
-  const { dashboardData, selectedArea, setSelectedArea } = useDashboard()
+  const [searchParams] = useSearchParams()
+  const evaluationHash = searchParams.get('hash') || undefined
+
+  const {
+    dashboardData,
+    filteredAreaResults,
+    selectedArea,
+    setSelectedArea,
+    loading,
+    error,
+  } = useDashboard(evaluationHash)
 
   const handleExport = () => {
-    // In production, this would generate a CSV with aggregated data
     const csvContent = [
       ['Área', 'Participantes', 'IRP Promedio'],
       ...dashboardData.areaResults.map(area => [
@@ -26,6 +36,38 @@ const DashboardPage: React.FC = () => {
     a.download = 'pulso-h-dashboard.csv'
     a.click()
     window.URL.revokeObjectURL(url)
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 text-accent animate-spin" />
+          <p className="text-primary-600">Cargando dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-8 pt-24">
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-red-500" />
+          </div>
+          <h1 className="font-display text-2xl font-bold text-red-800 mb-4">
+            Error al cargar el dashboard
+          </h1>
+          <p className="text-red-700 mb-2">
+            {error.message}
+          </p>
+          <p className="text-red-600 text-sm">
+            Verifica que el link de la evaluación sea correcto.
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -89,7 +131,7 @@ const DashboardPage: React.FC = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <AreaRanking areas={dashboardData.areaResults} />
+              <AreaRanking areas={filteredAreaResults} />
             </div>
 
             <div className="space-y-6">

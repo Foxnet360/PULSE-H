@@ -1,5 +1,4 @@
 import {
-  LikertResponse,
   ItemResponse,
   AssessmentResult,
   DimensionInterpretation,
@@ -10,6 +9,8 @@ import {
   CustomDimensionScores,
 } from '../types/assessment'
 import { getItemsByModule } from '../data/assessmentData'
+import { getProfileByKey, getProfileColor as getCanonicalProfileColor } from '../data/profiles'
+import { sumRiskValues, averageRiskValue } from './scoring'
 
 // ====== CONSTANTS ======
 
@@ -37,38 +38,13 @@ const IRP_WEIGHTS = {
   rri: 0.05,
 }
 
-// Profile definitions
-const PROFILE_DEFINITIONS: Record<BurnoutProfile, { name: string; description: string; prevalence: string }> = {
-  floreciente: {
-    name: 'Floreciente',
-    description: 'Tienes altos niveles de bienestar, realización y energía. Tu relación con el trabajo es positiva y sostenible.',
-    prevalence: '~15%',
-  },
-  estable: {
-    name: 'Estable',
-    description: 'Mantienes un balance razonable. Hay áreas de mejora, pero en general manejas bien las demandas laborales.',
-    prevalence: '~20%',
-  },
-  resiliente: {
-    name: 'Resiliente',
-    description: 'A pesar de la presión, mantienes una buena actitud y encuentras sentido en tu trabajo.',
-    prevalence: '~18%',
-  },
-  requete: {
-    name: 'Requete',
-    description: 'Sientes agotamiento y desconexión. Es importante tomar acciones preventivas ahora.',
-    prevalence: '~22%',
-  },
-  sobrecargado: {
-    name: 'Sobrecargadx',
-    description: 'Estás en una situación de alto riesgo. Necesitas atención inmediata y apoyo profesional.',
-    prevalence: '~15%',
-  },
-  fragil: {
-    name: 'Funcional pero Frágil',
-    description: 'Mantienes el funcionamiento, pero tus recursos están muy limitados.',
-    prevalence: '~10%',
-  },
+// Profile definitions loaded from canonical source of truth
+const getProfileDefinition = (profile: BurnoutProfile) => {
+  const definition = getProfileByKey(profile)
+  if (!definition) {
+    throw new Error(`Unknown profile: ${profile}`)
+  }
+  return definition
 }
 
 // ====== CALCULATION FUNCTIONS ======
@@ -83,20 +59,14 @@ export const calculateSubscales = (
   const dpItems = getItemsByModule('conexion')
   const rpItems = getItemsByModule('proposito')
 
-  const getScore = (itemIds: string[]): number => {
-    const scores = itemIds
-      .map(id => responses.find(r => r.itemId === id)?.value)
-      .filter((v): v is LikertResponse => v !== null && v !== undefined)
-    
-    return scores.length > 0
-      ? scores.reduce((sum: number, val) => sum + val, 0)
-      : 0
-  }
+  const responseMap = Object.fromEntries(
+    responses.map(r => [r.itemId, r.value])
+  )
 
   return {
-    ae: getScore(aeItems.map(i => i.id)),
-    dp: getScore(dpItems.map(i => i.id)),
-    rp: getScore(rpItems.map(i => i.id)),
+    ae: sumRiskValues(aeItems, responseMap),
+    dp: sumRiskValues(dpItems, responseMap),
+    rp: sumRiskValues(rpItems, responseMap),
   }
 }
 
@@ -110,21 +80,14 @@ export const calculateCustomDimensions = (
   const cvtItems = getItemsByModule('equilibrio')
   const rriItems = getItemsByModule('fortaleza')
 
-  const getNormalizedScore = (itemIds: string[]): number => {
-    const scores = itemIds
-      .map(id => responses.find(r => r.itemId === id)?.value)
-      .filter((v): v is LikertResponse => v !== null && v !== undefined)
-    
-    if (scores.length === 0) return 50 // Default neutral
-    
-    const avg = scores.reduce((sum: number, val) => sum + val, 0) / scores.length
-    return (avg / 6) * 100 // Normalize 0-6 to 0-100
-  }
+  const responseMap = Object.fromEntries(
+    responses.map(r => [r.itemId, r.value])
+  )
 
   return {
-    for: getNormalizedScore(forItems.map(i => i.id)),
-    cvt: getNormalizedScore(cvtItems.map(i => i.id)),
-    rri: getNormalizedScore(rriItems.map(i => i.id)),
+    for: (averageRiskValue(forItems, responseMap) / 6) * 100,
+    cvt: (averageRiskValue(cvtItems, responseMap) / 6) * 100,
+    rri: (averageRiskValue(rriItems, responseMap) / 6) * 100,
   }
 }
 
@@ -171,11 +134,11 @@ export const interpretSubscale = (
     }
   }
 
-  // RP is reversed
+  // RP is reverse-scored: high risk value = low personal realization
   if (score >= CUTOFFS.rp.high) return {
-    level: 'bajo',
-    label: 'Alto',
-    description: 'Alta realización personal',
+    level: 'alto',
+    label: 'Bajo',
+    description: 'Baja realización personal - factor de riesgo',
   }
   if (score >= CUTOFFS.rp.moderate) return {
     level: 'moderado',
@@ -183,9 +146,9 @@ export const interpretSubscale = (
     description: 'Realización personal adecuada',
   }
   return {
-    level: 'alto',
-    label: 'Bajo',
-    description: 'Baja realización personal - factor de riesgo',
+    level: 'bajo',
+    label: 'Alto',
+    description: 'Alta realización personal',
   }
 }
 
@@ -240,10 +203,10 @@ export const calculateIRP = (
   subscales: SubscaleScores,
   customDimensions: CustomDimensionScores
 ): { score: number; zone: IRPZone; label: string; description: string } => {
-  // Normalize subscales to 0-100
+  // Normalize subscales to 0-100 (risk direction)
   const aeNorm = (subscales.ae / 36) * 100
   const dpNorm = (subscales.dp / 30) * 100
-  const rpNorm = ((36 - subscales.rp) / 36) * 100 // Inverted: low RP = high risk
+  const rpNorm = (subscales.rp / 36) * 100
 
   // Calculate weighted IRP
   const score = Math.round(
@@ -251,8 +214,8 @@ export const calculateIRP = (
     dpNorm * IRP_WEIGHTS.dp +
     rpNorm * IRP_WEIGHTS.rp +
     customDimensions.for * IRP_WEIGHTS.for +
-    (100 - customDimensions.cvt) * IRP_WEIGHTS.cvt + // Inverted: low CVT = high risk
-    (100 - customDimensions.rri) * IRP_WEIGHTS.rri   // Inverted: low RRI = high risk
+    customDimensions.cvt * IRP_WEIGHTS.cvt +
+    customDimensions.rri * IRP_WEIGHTS.rri
   )
 
   // Determine zone
@@ -292,7 +255,7 @@ export const generateAssessmentResult = (
   const profile = determineProfile(subscales)
   const irp = calculateIRP(subscales, customDimensions)
 
-  const profileDef = PROFILE_DEFINITIONS[profile]
+  const profileDef = getProfileDefinition(profile)
 
   const createDimensionInterpretation = (
     score: number,
@@ -300,7 +263,7 @@ export const generateAssessmentResult = (
   ): DimensionInterpretation => {
     const interpretation = interpretSubscale(score, type)
     return {
-      score: type === 'rp' ? ((36 - score) / 36) * 100 : (score / (type === 'ae' ? 36 : 30)) * 100,
+      score: (score / (type === 'ae' ? 36 : type === 'dp' ? 30 : 36)) * 100,
       rawScore: score,
       level: interpretation.level,
       label: interpretation.label,
@@ -311,13 +274,23 @@ export const generateAssessmentResult = (
   const createCustomInterpretation = (
     score: number,
     label: string
-  ): DimensionInterpretation => ({
-    score,
-    rawScore: score,
-    level: score < 33 ? 'bajo' : score < 66 ? 'moderado' : 'alto',
-    label: score < 33 ? 'Bajo' : score < 66 ? 'Moderado' : 'Alto',
-    description: `${label}: ${score < 33 ? 'Necesita atención' : score < 66 ? 'Nivel adecuado' : 'Nivel óptimo'}`,
-  })
+  ): DimensionInterpretation => {
+    const level: RiskLevel = score < 33 ? 'bajo' : score < 66 ? 'moderado' : 'alto'
+    const displayLabel = score < 33 ? 'Bajo' : score < 66 ? 'Moderado' : 'Alto'
+    const description = score < 33
+      ? `${label}: Nivel óptimo`
+      : score < 66
+        ? `${label}: Nivel adecuado`
+        : `${label}: Necesita atención`
+
+    return {
+      score,
+      rawScore: score,
+      level,
+      label: displayLabel,
+      description,
+    }
+  }
 
   return {
     id: crypto.randomUUID(),
@@ -381,15 +354,7 @@ export const getRiskLevelColor = (level: RiskLevel): string => {
  * Get color for profile
  */
 export const getProfileColor = (profile: BurnoutProfile): string => {
-  const colors: Record<BurnoutProfile, string> = {
-    floreciente: '#4a7c59',
-    estable: '#627d98',
-    resiliente: '#5c8a9a',
-    requete: '#c9872c',
-    sobrecargado: '#b83232',
-    fragil: '#8b6914',
-  }
-  return colors[profile]
+  return getCanonicalProfileColor(profile)
 }
 
 /**

@@ -1,46 +1,81 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 
-export const AUTH_TOKEN_KEY = 'pulso-h-auth-token'
-const FALLBACK_PASSWORD = 'acrux-pulso-admin-2024'
-
 interface AuthContextValue {
   isAuthenticated: boolean
-  login: (password: string) => boolean
-  logout: () => void
+  isLoading: boolean
+  login: (password: string) => Promise<boolean>
+  logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return !!localStorage.getItem(AUTH_TOKEN_KEY)
-  })
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const handleStorage = () => {
-      setIsAuthenticated(!!localStorage.getItem(AUTH_TOKEN_KEY))
+    const checkStatus = async () => {
+      try {
+        const response = await fetch('/api/auth.php', {
+          method: 'GET',
+          credentials: 'include',
+        })
+        if (response.ok) {
+          const data = await response.json()
+          setIsAuthenticated(!!data.authenticated)
+        } else {
+          setIsAuthenticated(false)
+        }
+      } catch (error) {
+        console.error('Auth status check failed:', error)
+        setIsAuthenticated(false)
+      } finally {
+        setIsLoading(false)
+      }
     }
-    window.addEventListener('storage', handleStorage)
-    return () => window.removeEventListener('storage', handleStorage)
+
+    checkStatus()
   }, [])
 
-  const login = useCallback((password: string) => {
-    const expected = ((import.meta as unknown as { env?: { VITE_PULSO_ADMIN_PASSWORD?: string } }).env?.VITE_PULSO_ADMIN_PASSWORD) || FALLBACK_PASSWORD
-    if (password === expected) {
-      localStorage.setItem(AUTH_TOKEN_KEY, 'authenticated')
-      setIsAuthenticated(true)
-      return true
+  const login = useCallback(async (password: string): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/auth.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+        credentials: 'include',
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setIsAuthenticated(!!data.authenticated)
+        return !!data.authenticated
+      }
+
+      setIsAuthenticated(false)
+      return false
+    } catch (error) {
+      console.error('Login request failed:', error)
+      setIsAuthenticated(false)
+      return false
     }
-    return false
   }, [])
 
-  const logout = useCallback(() => {
-    localStorage.removeItem(AUTH_TOKEN_KEY)
-    setIsAuthenticated(false)
+  const logout = useCallback(async (): Promise<void> => {
+    try {
+      await fetch('/api/auth.php', {
+        method: 'POST',
+        credentials: 'include',
+      })
+    } catch (error) {
+      console.error('Logout request failed:', error)
+    } finally {
+      setIsAuthenticated(false)
+    }
   }, [])
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   )
