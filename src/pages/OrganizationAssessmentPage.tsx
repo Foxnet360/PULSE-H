@@ -32,7 +32,7 @@ const OrganizationAssessmentPage: React.FC = () => {
         if (!found) {
           setError('El link de evaluación no existe o ha sido desactivado')
         }
-        setEvaluation(found)
+        setEvaluation(found ?? null)
       } catch {
         setError('No se pudo validar el link de evaluación')
       } finally {

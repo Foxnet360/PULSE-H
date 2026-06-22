@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useLinkManagement } from './useLinkManagement'
+import type { EvaluationConfig } from '../types/assessment'
 
 const mockFetch = vi.fn()
 global.fetch = mockFetch
@@ -71,7 +72,7 @@ describe('useLinkManagement', () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
-    let created
+    let created: EvaluationConfig | undefined
     await act(async () => {
       created = await result.current.createEvaluation({
         organizationName: 'NewOrg',
@@ -115,7 +116,7 @@ describe('useLinkManagement', () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
-    let found
+    let found: EvaluationConfig | undefined
     await act(async () => {
       found = await result.current.getEvaluationByHash('findme12')
     })
