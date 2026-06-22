@@ -63,6 +63,60 @@ function updateLeadScore($db, $leadId, $additionalScore) {
     ]);
 }
 
+/**
+ * Localiza el sender unificado de acrux.life para poder invocarlo desde PULSO-H.
+ * Soporta despliegue anidado en Hostinger y desarrollo local como sibling.
+ */
+function locateUnifiedSenderPath(): ?string {
+    $envPath = env('ACRUX_UNIFIED_SENDER_PATH', '');
+    if ($envPath !== '' && file_exists($envPath)) {
+        return $envPath;
+    }
+
+    $candidates = [
+        __DIR__ . '/../../database/email_sender_unified.php',          // producción: public_html/database/
+        __DIR__ . '/../../acrux.life/database/email_sender_unified.php', // dev local: sibling
+    ];
+
+    foreach ($candidates as $path) {
+        if (file_exists($path)) {
+            return $path;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Envía Email 1 inmediatamente a través del remitente unificado.
+ * Retorna true si el email fue enviado, false en caso contrario.
+ */
+function sendImmediateUnifiedEmail(string $email, string $product = 'pulso-h'): bool {
+    $senderPath = locateUnifiedSenderPath();
+    if (!$senderPath) {
+        error_log('PULSO-H unified sender not found for email: ' . $email);
+        return false;
+    }
+
+    try {
+        require_once $senderPath;
+        if (!class_exists('UnifiedEmailSender')) {
+            error_log('PULSO-H UnifiedEmailSender class not available');
+            return false;
+        }
+
+        $config = require_once dirname($senderPath) . '/config.php';
+        $sender = new UnifiedEmailSender($config);
+        $sender->processPendingSequences($product, 0, $email);
+
+        $stats = $sender->getStats();
+        return ($stats['sent'] ?? 0) > 0;
+    } catch (Exception $e) {
+        error_log('PULSO-H unified immediate send failed: ' . $e->getMessage());
+        return false;
+    }
+}
+
 switch ($method) {
     case 'POST':
         $data = json_decode(file_get_contents('php://input'), true);
@@ -152,6 +206,7 @@ switch ($method) {
         // Send welcome email if marketing consent is true
         $emailResult = null;
         $unifiedSequenceId = null;
+        $welcomeEmailChannel = null;
 
         if (!empty($data['marketing_consent'])) {
             try {
@@ -172,9 +227,20 @@ switch ($method) {
                 $unifiedSequenceId = null;
             }
 
-            // Fallback to legacy welcome email if unified nurturing failed or is not configured
-            if (!$unifiedSequenceId) {
+            if ($unifiedSequenceId) {
+                // Enviar Email 1 inmediatamente por el canal unificado
+                $unifiedSent = sendImmediateUnifiedEmail($email, 'pulso-h');
+                if ($unifiedSent) {
+                    $welcomeEmailChannel = 'unified';
+                } else {
+                    // Fallback al email de bienvenida legacy si el envío unificado falla
+                    $emailResult = sendWelcomeEmail($leadId);
+                    $welcomeEmailChannel = !empty($emailResult['success']) ? 'legacy' : null;
+                }
+            } else {
+                // Fallback al email de bienvenida legacy si la inserción unificada falla
                 $emailResult = sendWelcomeEmail($leadId);
+                $welcomeEmailChannel = !empty($emailResult['success']) ? 'legacy' : null;
             }
         }
 
@@ -184,6 +250,7 @@ switch ($method) {
             'events_processed' => isset($data['events']) ? count($data['events']) : 0,
             'score_added' => $eventsScore,
             'welcome_email' => $emailResult,
+            'welcome_email_channel' => $welcomeEmailChannel,
             'sequence_id' => $unifiedSequenceId,
         ]);
         
