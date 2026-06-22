@@ -3,23 +3,57 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { Building2, AlertCircle, ArrowRight, Check } from 'lucide-react'
 import { useLinkManagement } from '../hooks/useLinkManagement'
+import type { AssessmentResult, EvaluationConfig } from '../types/assessment'
 import AssessmentPage from './AssessmentPage'
 
 const OrganizationAssessmentPage: React.FC = () => {
   const { hash } = useParams<{ hash: string }>()
   const navigate = useNavigate()
-  const { getEvaluationByHash } = useLinkManagement()
-  
-  const [evaluation, setEvaluation] = useState(getEvaluationByHash(hash || ''))
+  const { getEvaluationByHash, saveResponse } = useLinkManagement()
+
+  const [evaluation, setEvaluation] = useState<EvaluationConfig | null>(null)
   const [isValidating, setIsValidating] = useState(true)
   const [hasConsented, setHasConsented] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // Re-check evaluation after hook loads from localStorage
-    const found = getEvaluationByHash(hash || '')
-    setEvaluation(found)
-    setIsValidating(false)
+    const validateHash = async () => {
+      setIsValidating(true)
+      setError(null)
+
+      if (!hash) {
+        setIsValidating(false)
+        setError('Link de evaluación inválido')
+        return
+      }
+
+      try {
+        const found = await getEvaluationByHash(hash)
+        if (!found) {
+          setError('El link de evaluación no existe o ha sido desactivado')
+        }
+        setEvaluation(found)
+      } catch {
+        setError('No se pudo validar el link de evaluación')
+      } finally {
+        setIsValidating(false)
+      }
+    }
+
+    validateHash()
   }, [hash, getEvaluationByHash])
+
+  const handleComplete = async (result: AssessmentResult) => {
+    if (!evaluation) return
+
+    await saveResponse(evaluation.hash, result, {
+      area: sessionStorage.getItem('pulso-h-area') || undefined,
+      role: sessionStorage.getItem('pulso-h-role') || undefined,
+      seniority: sessionStorage.getItem('pulso-h-seniority') || undefined,
+      gender: sessionStorage.getItem('pulso-h-gender') || undefined,
+      ageRange: sessionStorage.getItem('pulso-h-age-range') || undefined,
+    })
+  }
 
   if (isValidating) {
     return (
@@ -29,7 +63,7 @@ const OrganizationAssessmentPage: React.FC = () => {
     )
   }
 
-  if (!evaluation) {
+  if (!evaluation || error) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8 pt-24">
         <motion.div
@@ -46,7 +80,7 @@ const OrganizationAssessmentPage: React.FC = () => {
           </h1>
 
           <p className="text-primary-600 mb-6">
-            El link que estás usando no existe o ha sido desactivado.
+            {error || 'El link que estás usando no existe o ha sido desactivado.'}
           </p>
 
           <button
@@ -134,7 +168,7 @@ const OrganizationAssessmentPage: React.FC = () => {
 
           {evaluation.deadline && (
             <div className="text-center text-sm text-primary-500 mb-6">
-              Fecha límite: {new Date(evaluation.deadline).toLocaleDateString('es-ES', {
+              Fecha límite: {evaluation.deadline.toLocaleDateString('es-ES', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
@@ -172,8 +206,8 @@ const OrganizationAssessmentPage: React.FC = () => {
     )
   }
 
-  // If consented, show the regular assessment
-  return <AssessmentPage />
+  // If consented, show the regular assessment with organization context
+  return <AssessmentPage evaluationHash={evaluation.hash} onComplete={handleComplete} />
 }
 
 export default OrganizationAssessmentPage
