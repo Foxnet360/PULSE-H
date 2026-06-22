@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { AssessmentResult, Intervention } from '../types/assessment'
 import { getRecommendedInterventions } from '../data/interventionData'
 import { getProfileColor, getIRPZoneColor } from '../utils/assessmentEngine'
@@ -304,13 +304,11 @@ const ResultsPage: React.FC = () => {
         </h2>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {/* Calendly */}
-          <a
-            href="https://calendly.com/acrux-consultores/30min"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackCTAClick('calendly')}
-            className="group bg-accent-50 rounded-xl p-6 hover:bg-accent-100 transition-colors cursor-pointer"
+          {/* Internal scheduling */}
+          <Link
+            to="/agendar"
+            onClick={() => trackCTAClick('schedule')}
+            className="group bg-accent-50 rounded-xl p-6 hover:bg-accent-100 transition-colors cursor-pointer block"
           >
             <div className="w-12 h-12 bg-accent rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Calendar className="w-6 h-6 text-white" />
@@ -321,7 +319,7 @@ const ResultsPage: React.FC = () => {
               Agendar ahora
               <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
             </span>
-          </a>
+          </Link>
 
           {/* Services */}
           <a
