@@ -203,12 +203,14 @@ switch ($method) {
         // Create email sequence
         createEmailSequence($leadId);
 
-        // Send welcome email if marketing consent is true
+        // Register in unified nurturing if GDPR consent is given.
+        // Email 1 is sent immediately only if marketing consent is also given.
         $emailResult = null;
         $unifiedSequenceId = null;
         $welcomeEmailChannel = null;
+        $email1Sent = false;
 
-        if (!empty($data['marketing_consent'])) {
+        if (!empty($data['gdpr_consent'])) {
             try {
                 $acruxDb = getAcuxDBConnection();
                 if ($acruxDb) {
@@ -221,27 +223,23 @@ switch ($method) {
                         'gdpr_consent' => !empty($data['gdpr_consent']),
                         'marketing_consent' => !empty($data['marketing_consent']),
                     ]);
+
+                    if ($unifiedSequenceId && !empty($data['marketing_consent'])) {
+                        $email1Sent = sendImmediateUnifiedEmail($email, 'pulso-h');
+                        $welcomeEmailChannel = $email1Sent ? 'unified' : null;
+                    }
                 }
             } catch (Exception $e) {
                 error_log('PULSO-H unified nurturing insert failed: ' . $e->getMessage());
                 $unifiedSequenceId = null;
             }
+        }
 
-            if ($unifiedSequenceId) {
-                // Enviar Email 1 inmediatamente por el canal unificado
-                $unifiedSent = sendImmediateUnifiedEmail($email, 'pulso-h');
-                if ($unifiedSent) {
-                    $welcomeEmailChannel = 'unified';
-                } else {
-                    // Fallback al email de bienvenida legacy si el envío unificado falla
-                    $emailResult = sendWelcomeEmail($leadId);
-                    $welcomeEmailChannel = !empty($emailResult['success']) ? 'legacy' : null;
-                }
-            } else {
-                // Fallback al email de bienvenida legacy si la inserción unificada falla
-                $emailResult = sendWelcomeEmail($leadId);
-                $welcomeEmailChannel = !empty($emailResult['success']) ? 'legacy' : null;
-            }
+        // Fallback to legacy welcome email if unified channel could not send Email 1
+        // and marketing consent is present.
+        if (!empty($data['marketing_consent']) && !$email1Sent) {
+            $emailResult = sendWelcomeEmail($leadId);
+            $welcomeEmailChannel = !empty($emailResult['success']) ? 'legacy' : null;
         }
 
         sendResponse([
