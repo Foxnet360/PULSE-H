@@ -4,6 +4,8 @@ import { Heart, Mail, Phone, MapPin } from 'lucide-react'
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear()
+  const contactPhone = import.meta.env.VITE_CONTACT_PHONE
+  const contactEmail = import.meta.env.VITE_CONTACT_EMAIL || 'info@acrux.life'
 
   return (
     <footer className="bg-primary-900 text-white py-12">
@@ -64,14 +66,16 @@ const Footer: React.FC = () => {
             <ul className="space-y-2">
               <li className="flex items-center gap-2 text-primary-300 text-sm">
                 <Mail className="w-4 h-4" />
-                <a href="mailto:info@acrux.life" className="hover:text-accent transition-colors">
-                  info@acrux.life
+                <a href={`mailto:${contactEmail}`} className="hover:text-accent transition-colors">
+                  {contactEmail}
                 </a>
               </li>
-              <li className="flex items-center gap-2 text-primary-300 text-sm">
-                <Phone className="w-4 h-4" />
-                <span>+57 (XXX) XXX-XXXX</span>
-              </li>
+              {contactPhone && (
+                <li className="flex items-center gap-2 text-primary-300 text-sm">
+                  <Phone className="w-4 h-4" />
+                  <span>{contactPhone}</span>
+                </li>
+              )}
               <li className="flex items-center gap-2 text-primary-300 text-sm">
                 <MapPin className="w-4 h-4" />
                 <span>Colombia</span>
