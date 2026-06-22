@@ -148,19 +148,43 @@ switch ($method) {
         
         // Create email sequence
         createEmailSequence($leadId);
-        
+
         // Send welcome email if marketing consent is true
         $emailResult = null;
+        $unifiedSequenceId = null;
+
         if (!empty($data['marketing_consent'])) {
-            $emailResult = sendWelcomeEmail($leadId);
+            try {
+                $acruxDb = getAcuxDBConnection();
+                if ($acruxDb) {
+                    $unifiedSequenceId = insertEmailSequence($acruxDb, [
+                        'email' => $email,
+                        'name' => isset($data['name']) ? sanitizeString($data['name']) : null,
+                        'company' => isset($data['organization']) ? sanitizeString($data['organization']) : null,
+                        'score' => $data['score'] ?? 10,
+                        'profile' => isset($data['profile']) ? sanitizeString($data['profile']) : null,
+                        'gdpr_consent' => !empty($data['gdpr_consent']),
+                        'marketing_consent' => !empty($data['marketing_consent']),
+                    ]);
+                }
+            } catch (Exception $e) {
+                error_log('PULSO-H unified nurturing insert failed: ' . $e->getMessage());
+                $unifiedSequenceId = null;
+            }
+
+            // Fallback to legacy welcome email if unified nurturing failed or is not configured
+            if (!$unifiedSequenceId) {
+                $emailResult = sendWelcomeEmail($leadId);
+            }
         }
-        
+
         sendResponse([
             'success' => true,
             'id' => $leadId,
             'events_processed' => isset($data['events']) ? count($data['events']) : 0,
             'score_added' => $eventsScore,
             'welcome_email' => $emailResult,
+            'sequence_id' => $unifiedSequenceId,
         ]);
         
     case 'GET':

@@ -15,6 +15,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Load environment variables from .env file if it exists
+// Helper para leer variables de entorno (SetEnv, .env o config.local.php)
+function env($key, $default = '') {
+    if (isset($_SERVER[$key]) && $_SERVER[$key] !== '') {
+        return $_SERVER[$key];
+    }
+    $val = getenv($key);
+    return ($val !== false && $val !== '') ? $val : $default;
+}
+
 function loadEnv($dir) {
     $path = rtrim($dir, '/') . '/.env';
     if (!file_exists($path)) {
@@ -44,10 +53,24 @@ function loadEnv($dir) {
 loadEnv(__DIR__ . '/..');
 
 // Database configuration
-define('DB_HOST', $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?: 'localhost');
-define('DB_NAME', $_ENV['DB_NAME'] ?? getenv('DB_NAME') ?: 'pulso_h');
-define('DB_USER', $_ENV['DB_USER'] ?? getenv('DB_USER') ?: 'root');
-define('DB_PASS', $_ENV['DB_PASS'] ?? getenv('DB_PASS') ?: '');
+// Las credenciales sensibles se cargan desde variables de entorno.
+// Configúralas vía .htaccess SetEnv, archivo .env o config.local.php (no versionado).
+define('DB_HOST', env('DB_HOST', 'localhost'));
+define('DB_NAME', env('DB_NAME', 'pulso_h'));
+define('DB_USER', env('DB_USER', 'root'));
+define('DB_PASS', env('DB_PASS', ''));
+
+// Advertencia si falta la contraseña de base de datos (sin bloquear la aplicación)
+if (DB_PASS === '') {
+    error_log('PULSO-H Warning: DB_PASS no está configurado en variables de entorno.');
+}
+
+// ACRUX unified nurturing database configuration (separate from local PULSO-H DB)
+// Las credenciales se cargan desde variables de entorno; nunca hardcodear.
+define('ACRUX_DB_HOST', env('ACRUX_DB_HOST', 'localhost'));
+define('ACRUX_DB_NAME', env('ACRUX_DB_NAME', 'acruxdb'));
+define('ACRUX_DB_USER', env('ACRUX_DB_USER', ''));
+define('ACRUX_DB_PASS', env('ACRUX_DB_PASS', ''));
 
 // Rate limiting
 define('RATE_LIMIT_REQUESTS', 100);
@@ -73,6 +96,85 @@ class Database {
         }
         return self::$instance;
     }
+}
+
+/**
+ * Conexión PDO a la base de datos unificada de acrux.life (nurturing).
+ * Retorna null en caso de fallo para no romper el flujo de captura de leads.
+ */
+function getAcuxDBConnection(): ?PDO {
+    $host = ACRUX_DB_HOST;
+    $name = ACRUX_DB_NAME;
+    $user = ACRUX_DB_USER;
+    $pass = ACRUX_DB_PASS;
+
+    if ($host === '' || $name === '' || $user === '') {
+        error_log('PULSO-H Warning: ACRUX_DB_* credentials are not fully configured.');
+        return null;
+    }
+
+    try {
+        $dsn = "mysql:host=$host;dbname=$name;charset=utf8mb4";
+        $pdo = new PDO($dsn, $user, $pass, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false,
+        ]);
+        return $pdo;
+    } catch (PDOException $e) {
+        error_log('PULSO-H ACRUX DB Connection failed: ' . $e->getMessage());
+        return null;
+    }
+}
+
+/**
+ * Inserta o actualiza un lead en la tabla unificada nurturing_sequences.
+ * Adaptado para PULSO-H: perfil -> maturity_level, IRP -> score.
+ * Retorna el id de la secuencia o null si no pudo insertarse.
+ */
+function insertEmailSequence(PDO $acruxDb, array $lead): ?int {
+    $stmt = $acruxDb->prepare("
+        INSERT INTO nurturing_sequences 
+        (email, name, company, product, score, maturity_level, weak_dimension, 
+         status, current_step, total_steps, gdpr_consent, marketing_consent, gdpr_timestamp, next_send_at)
+        VALUES (?, ?, ?, 'pulso-h', ?, ?, ?, 'active', 0, 5, ?, ?, NOW(), NOW())
+        ON DUPLICATE KEY UPDATE
+            name = VALUES(name),
+            company = VALUES(company),
+            score = VALUES(score),
+            maturity_level = VALUES(maturity_level),
+            weak_dimension = VALUES(weak_dimension),
+            current_step = 0,
+            status = 'active',
+            gdpr_consent = VALUES(gdpr_consent),
+            marketing_consent = VALUES(marketing_consent),
+            gdpr_timestamp = NOW(),
+            next_send_at = NOW(),
+            last_sent_at = NULL,
+            emails_opened = 0,
+            emails_clicked = 0,
+            total_emails_sent = 0,
+            retry_count = 0,
+            last_error = NULL,
+            updated_at = NOW()
+    ");
+
+    $stmt->execute([
+        $lead['email'] ?? '',
+        $lead['name'] ?? '',
+        $lead['company'] ?? '',
+        $lead['score'] ?? 0,
+        $lead['profile'] ?? '',
+        $lead['weak_dimension'] ?? null,
+        !empty($lead['gdpr_consent']) ? 1 : 0,
+        !empty($lead['marketing_consent']) ? 1 : 0,
+    ]);
+
+    $select = $acruxDb->prepare("SELECT id FROM nurturing_sequences WHERE email = ? AND product = 'pulso-h'");
+    $select->execute([$lead['email'] ?? '']);
+    $row = $select->fetch(PDO::FETCH_ASSOC);
+
+    return $row ? (int)$row['id'] : null;
 }
 
 class RateLimiter {
@@ -128,12 +230,17 @@ function sanitizeString($str) {
 }
 
 // SMTP Email Configuration - Loaded from environment
-$SMTP_HOST = $_ENV['SMTP_HOST'] ?? getenv('SMTP_HOST') ?: 'localhost';
-$SMTP_PORT = intval($_ENV['SMTP_PORT'] ?? getenv('SMTP_PORT') ?: 1025);
-$SMTP_SECURE = filter_var($_ENV['SMTP_SECURE'] ?? getenv('SMTP_SECURE') ?: false, FILTER_VALIDATE_BOOLEAN);
-$SMTP_USER = $_ENV['SMTP_USER'] ?? getenv('SMTP_USER') ?: '';
-$SMTP_PASS = $_ENV['SMTP_PASS'] ?? getenv('SMTP_PASS') ?: '';
-$SMTP_FROM = $_ENV['SMTP_FROM'] ?? getenv('SMTP_FROM') ?: 'PULSO-H <no-reply@localhost>';
+$SMTP_HOST = env('SMTP_HOST', 'localhost');
+$SMTP_PORT = intval(env('SMTP_PORT', 1025));
+$SMTP_SECURE = filter_var(env('SMTP_SECURE', 'false'), FILTER_VALIDATE_BOOLEAN);
+$SMTP_USER = env('SMTP_USER', '');
+$SMTP_PASS = env('SMTP_PASS', '');
+$SMTP_FROM = env('SMTP_FROM', 'PULSO-H <no-reply@localhost>');
+
+// Advertencia si falta la contraseña SMTP (sin bloquear la aplicación)
+if ($SMTP_PASS === '') {
+    error_log('PULSO-H Warning: SMTP_PASS no está configurado en variables de entorno.');
+}
 
 function sendEmail($to, $subject, $html, $text = null): array {
     global $SMTP_FROM;
