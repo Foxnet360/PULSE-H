@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, lazy, Suspense } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { AssessmentResult, Intervention } from '../types/assessment'
 import { getRecommendedInterventions } from '../data/interventionData'
@@ -6,7 +6,8 @@ import { getProfileColor, getIRPZoneColor } from '../utils/assessmentEngine'
 import { Download, Calendar, ChevronDown, ChevronUp, AlertTriangle, TrendingUp, ArrowRight, Compass, Loader2 } from 'lucide-react'
 import { getTestimonialsByProfile } from '../data/testimonials'
 import { trackResultsView, trackPDFDownload, trackCTAClick } from '../utils/analytics'
-import PDFReportGenerator from '../components/pdf/PDFReportGenerator'
+
+const PDFReportGenerator = lazy(() => import('../components/pdf/PDFReportGenerator'))
 
 const ResultsPage: React.FC = () => {
   const navigate = useNavigate()
@@ -341,39 +342,45 @@ const ResultsPage: React.FC = () => {
           </a>
 
           {/* PDF */}
-          <PDFReportGenerator
-            result={result}
-            interventions={interventions}
-          >
-            {(generatePDF, isGenerating, progress) => (
-              <button
-                onClick={() => {
-                  trackPDFDownload()
-                  generatePDF()
-                }}
-                disabled={isGenerating}
-                className="group bg-green-50 rounded-xl p-6 hover:bg-green-100 transition-colors text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  {isGenerating ? (
-                    <Loader2 className="w-6 h-6 text-white animate-spin" />
-                  ) : (
-                    <Download className="w-6 h-6 text-white" />
-                  )}
-                </div>
-                <h3 className="font-semibold text-primary-900 mb-2">
-                  {isGenerating ? `Generando PDF... ${progress}%` : 'Descargar informe'}
-                </h3>
-                <p className="text-sm text-primary-600 mb-4">Obtén tu reporte completo en PDF para compartir con tu equipo.</p>
-                <span className="inline-flex items-center text-green-600 text-sm font-semibold">
-                  {isGenerating ? 'Generando...' : 'Descargar'}
-                  {!isGenerating && (
-                    <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                  )}
-                </span>
-              </button>
-            )}
-          </PDFReportGenerator>
+          <Suspense fallback={
+            <div className="group bg-green-50 rounded-xl p-6 flex items-center justify-center">
+              <Loader2 className="w-6 h-6 text-green-600 animate-spin" />
+            </div>
+          }>
+            <PDFReportGenerator
+              result={result}
+              interventions={interventions}
+            >
+              {(generatePDF, isGenerating, progress) => (
+                <button
+                  onClick={() => {
+                    trackPDFDownload()
+                    generatePDF()
+                  }}
+                  disabled={isGenerating}
+                  className="group bg-green-50 rounded-xl p-6 hover:bg-green-100 transition-colors text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    {isGenerating ? (
+                      <Loader2 className="w-6 h-6 text-white animate-spin" />
+                    ) : (
+                      <Download className="w-6 h-6 text-white" />
+                    )}
+                  </div>
+                  <h3 className="font-semibold text-primary-900 mb-2">
+                    {isGenerating ? `Generando PDF... ${progress}%` : 'Descargar informe'}
+                  </h3>
+                  <p className="text-sm text-primary-600 mb-4">Obtén tu reporte completo en PDF para compartir con tu equipo.</p>
+                  <span className="inline-flex items-center text-green-600 text-sm font-semibold">
+                    {isGenerating ? 'Generando...' : 'Descargar'}
+                    {!isGenerating && (
+                      <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    )}
+                  </span>
+                </button>
+              )}
+            </PDFReportGenerator>
+          </Suspense>
         </div>
       </div>
     </div>

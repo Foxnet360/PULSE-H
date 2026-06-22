@@ -58,7 +58,7 @@ describe('ResultsPage', () => {
     expect(scheduleLink).toHaveAttribute('href', '/agendar')
   })
 
-  it('does not render external Calendly link', () => {
+  it('renders the lazy-loaded PDF download button', async () => {
     sessionStorage.setItem('pulso-h-lead-id', '123')
     sessionStorage.setItem('pulso-h-result', JSON.stringify(mockResult))
 
@@ -68,6 +68,7 @@ describe('ResultsPage', () => {
       </MemoryRouter>
     )
 
-    expect(screen.queryByText('calendly.com')).not.toBeInTheDocument()
+    const pdfButton = await screen.findByRole('button', { name: /descargar informe/i }, { timeout: 5000 })
+    expect(pdfButton).toBeInTheDocument()
   })
 })

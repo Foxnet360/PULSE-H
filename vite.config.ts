@@ -18,7 +18,13 @@ export default defineConfig({
           if (id.includes('node_modules/recharts')) {
             return 'charts'
           }
-          if (id.includes('node_modules/jspdf') || id.includes('node_modules/jspdf-autotable') || id.includes('node_modules/html2canvas')) {
+          if (id.includes('node_modules/jspdf') && !id.includes('node_modules/jspdf-autotable')) {
+            return 'pdf-core'
+          }
+          if (id.includes('node_modules/html2canvas')) {
+            return 'pdf-canvas'
+          }
+          if (id.includes('node_modules/jspdf-autotable')) {
             return 'pdf'
           }
         },
