@@ -10,6 +10,7 @@ import {
   CustomDimensionScores,
 } from '../types/assessment'
 import { getItemsByModule } from '../data/assessmentData'
+import { getProfileByKey, getProfileColor as getCanonicalProfileColor } from '../data/profiles'
 
 // ====== CONSTANTS ======
 
@@ -37,38 +38,13 @@ const IRP_WEIGHTS = {
   rri: 0.05,
 }
 
-// Profile definitions
-const PROFILE_DEFINITIONS: Record<BurnoutProfile, { name: string; description: string; prevalence: string }> = {
-  floreciente: {
-    name: 'Floreciente',
-    description: 'Tienes altos niveles de bienestar, realización y energía. Tu relación con el trabajo es positiva y sostenible.',
-    prevalence: '~15%',
-  },
-  estable: {
-    name: 'Estable',
-    description: 'Mantienes un balance razonable. Hay áreas de mejora, pero en general manejas bien las demandas laborales.',
-    prevalence: '~20%',
-  },
-  resiliente: {
-    name: 'Resiliente',
-    description: 'A pesar de la presión, mantienes una buena actitud y encuentras sentido en tu trabajo.',
-    prevalence: '~18%',
-  },
-  requete: {
-    name: 'Requete',
-    description: 'Sientes agotamiento y desconexión. Es importante tomar acciones preventivas ahora.',
-    prevalence: '~22%',
-  },
-  sobrecargado: {
-    name: 'Sobrecargadx',
-    description: 'Estás en una situación de alto riesgo. Necesitas atención inmediata y apoyo profesional.',
-    prevalence: '~15%',
-  },
-  fragil: {
-    name: 'Funcional pero Frágil',
-    description: 'Mantienes el funcionamiento, pero tus recursos están muy limitados.',
-    prevalence: '~10%',
-  },
+// Profile definitions loaded from canonical source of truth
+const getProfileDefinition = (profile: BurnoutProfile) => {
+  const definition = getProfileByKey(profile)
+  if (!definition) {
+    throw new Error(`Unknown profile: ${profile}`)
+  }
+  return definition
 }
 
 // ====== CALCULATION FUNCTIONS ======
@@ -292,7 +268,7 @@ export const generateAssessmentResult = (
   const profile = determineProfile(subscales)
   const irp = calculateIRP(subscales, customDimensions)
 
-  const profileDef = PROFILE_DEFINITIONS[profile]
+  const profileDef = getProfileDefinition(profile)
 
   const createDimensionInterpretation = (
     score: number,
@@ -381,15 +357,7 @@ export const getRiskLevelColor = (level: RiskLevel): string => {
  * Get color for profile
  */
 export const getProfileColor = (profile: BurnoutProfile): string => {
-  const colors: Record<BurnoutProfile, string> = {
-    floreciente: '#4a7c59',
-    estable: '#627d98',
-    resiliente: '#5c8a9a',
-    requete: '#c9872c',
-    sobrecargado: '#b83232',
-    fragil: '#8b6914',
-  }
-  return colors[profile]
+  return getCanonicalProfileColor(profile)
 }
 
 /**
