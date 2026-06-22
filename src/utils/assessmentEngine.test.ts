@@ -66,14 +66,14 @@ describe('Assessment Engine', () => {
       expect(result.rp).toBe(0)
     })
 
-    it('calculates correct RP score', () => {
+    it('calculates correct RP risk score', () => {
       const responses = createResponses({
         'rp-1': 5, 'rp-2': 4, 'rp-3': 5, 'rp-4': 3, 'rp-5': 4, 'rp-6': 5,
       })
       const result = calculateSubscales(responses)
       expect(result.ae).toBe(0)
       expect(result.dp).toBe(0)
-      expect(result.rp).toBe(26) // 5+4+5+3+4+5
+      expect(result.rp).toBe(10) // reversed: (6-5)+(6-4)+(6-5)+(6-3)+(6-4)+(6-5)
     })
 
     it('calculates all subscales together', () => {
@@ -85,7 +85,7 @@ describe('Assessment Engine', () => {
       const result = calculateSubscales(responses)
       expect(result.ae).toBe(21)
       expect(result.dp).toBe(14)
-      expect(result.rp).toBe(26)
+      expect(result.rp).toBe(10) // reversed risk sum
     })
   })
 
@@ -128,8 +128,8 @@ describe('Assessment Engine', () => {
     })
 
     describe('RP (Realizacion Personal) - Reversed', () => {
-      it('returns bajo for RP >= 28 (high RP = low burnout)', () => {
-        const result = interpretSubscale(30, 'rp')
+      it('returns bajo for RP <= 22 (high RP = low burnout)', () => {
+        const result = interpretSubscale(20, 'rp')
         expect(result.level).toBe('bajo')
         expect(result.label).toBe('Alto')
       })
@@ -140,8 +140,8 @@ describe('Assessment Engine', () => {
         expect(result.label).toBe('Moderado')
       })
 
-      it('returns alto for RP < 22 (low RP = high burnout)', () => {
-        const result = interpretSubscale(18, 'rp')
+      it('returns alto for RP >= 28 (low RP = high burnout)', () => {
+        const result = interpretSubscale(30, 'rp')
         expect(result.level).toBe('alto')
         expect(result.label).toBe('Bajo')
       })
@@ -149,8 +149,8 @@ describe('Assessment Engine', () => {
   })
 
   describe('determineProfile', () => {
-    it('returns sobrecargado for high AE + high DP + low RP', () => {
-      const subscales = { ae: 30, dp: 15, rp: 15 }
+    it('returns sobrecargado for high AE + high DP + high RP risk', () => {
+      const subscales = { ae: 30, dp: 15, rp: 30 } // rp: 30 = high risk (low realization)
       const result = determineProfile(subscales)
       expect(result).toBe('sobrecargado')
     })
@@ -167,8 +167,8 @@ describe('Assessment Engine', () => {
       expect(result).toBe('requete')
     })
 
-    it('returns floreciente for low AE + low DP + moderate/high RP', () => {
-      const subscales = { ae: 10, dp: 3, rp: 30 }
+    it('returns floreciente for low AE + low DP + low RP risk (high realization)', () => {
+      const subscales = { ae: 10, dp: 3, rp: 6 } // rp: 6 = low risk (high realization)
       const result = determineProfile(subscales)
       expect(result).toBe('floreciente')
     })
@@ -218,11 +218,11 @@ describe('Assessment Engine', () => {
     })
 
     it('returns higher IRP for higher risk', () => {
-      const lowRiskSubscales = { ae: 10, dp: 3, rp: 30 }
+      const lowRiskSubscales = { ae: 10, dp: 3, rp: 6 } // low risk (high realization)
       const lowRiskCustom = { for: 80, cvt: 70, rri: 75 }
       const lowResult = calculateIRP(lowRiskSubscales, lowRiskCustom)
       
-      const highRiskSubscales = { ae: 30, dp: 15, rp: 15 }
+      const highRiskSubscales = { ae: 30, dp: 15, rp: 30 } // high risk (low realization)
       const highRiskCustom = { for: 30, cvt: 25, rri: 20 }
       const highResult = calculateIRP(highRiskSubscales, highRiskCustom)
       
@@ -253,7 +253,7 @@ describe('Assessment Engine', () => {
       const responses = createFullAssessment(
         [5, 6, 5, 6, 5, 6], // AE: high (33)
         [5, 6, 5, 5, 6],    // DP: high (27)
-        [1, 2, 1, 2, 1, 2], // RP: low (9)
+        [1, 1, 1, 1, 1, 1], // RP: low raw (6) -> inverted high risk (30)
         [2, 3, 2, 3, 2, 3, 2], // Entorno: poor
         [2, 3, 2, 2, 3, 2], // Equilibrio: poor
         [2, 2, 3, 2, 2, 3]  // Fortaleza: poor
@@ -293,6 +293,104 @@ describe('Assessment Engine', () => {
       expect(result.subscales).toBeDefined()
       expect(result.customDimensions).toBeDefined()
       expect(result.timestamp).toBeDefined()
+    })
+
+    it('treats high RP responses as low risk', () => {
+      const responses = createFullAssessment(
+        [3, 3, 3, 3, 3, 3], // AE neutral
+        [3, 3, 3, 3, 3],    // DP neutral
+        [6, 6, 6, 6, 6, 6], // RP high (positive, reversed)
+        [3, 3, 3, 3, 3, 3, 3], // FOR neutral
+        [3, 3, 3, 3, 3, 3], // CVT neutral
+        [3, 3, 3, 3, 3, 3]  // RRI neutral
+      )
+
+      const result = generateAssessmentResult(responses)
+
+      expect(result.subscales.rp.level).toBe('bajo')
+      expect(result.subscales.rp.rawScore).toBe(0)
+      expect(result.irp).toBeLessThan(50)
+    })
+
+    it('treats low RP responses as high risk', () => {
+      const responses = createFullAssessment(
+        [3, 3, 3, 3, 3, 3],
+        [3, 3, 3, 3, 3],
+        [0, 0, 0, 0, 0, 0], // RP low (negative, reversed)
+        [3, 3, 3, 3, 3, 3, 3],
+        [3, 3, 3, 3, 3, 3],
+        [3, 3, 3, 3, 3, 3]
+      )
+
+      const result = generateAssessmentResult(responses)
+
+      expect(result.subscales.rp.level).toBe('alto')
+      expect(result.subscales.rp.rawScore).toBe(36)
+      expect(result.irp).toBeGreaterThan(50)
+    })
+
+    it('reduces FOR risk when positive items are high', () => {
+      const responses = createFullAssessment(
+        [3, 3, 3, 3, 3, 3],
+        [3, 3, 3, 3, 3],
+        [3, 3, 3, 3, 3, 3],
+        [3, 6, 6, 3, 6, 6, 6], // for-1 neutral (negative), for-2..7 high (positive reversed)
+        [3, 3, 3, 3, 3, 3],
+        [3, 3, 3, 3, 3, 3]
+      )
+
+      const result = generateAssessmentResult(responses)
+
+      expect(result.customDimensions.for.score).toBeLessThan(33)
+      expect(result.customDimensions.for.level).toBe('bajo')
+    })
+
+    it('increases FOR risk when negative items are high', () => {
+      const responses = createFullAssessment(
+        [3, 3, 3, 3, 3, 3],
+        [3, 3, 3, 3, 3],
+        [3, 3, 3, 3, 3, 3],
+        [6, 3, 3, 6, 3, 3, 3], // for-1 high (negative), for-4 high (negative)
+        [3, 3, 3, 3, 3, 3],
+        [3, 3, 3, 3, 3, 3]
+      )
+
+      const result = generateAssessmentResult(responses)
+
+      expect(result.customDimensions.for.score).toBeGreaterThan(50)
+      expect(result.customDimensions.for.level).toBe('moderado')
+    })
+
+    it('reduces CVT risk when positive work-life balance items are high', () => {
+      const responses = createFullAssessment(
+        [3, 3, 3, 3, 3, 3],
+        [3, 3, 3, 3, 3],
+        [3, 3, 3, 3, 3, 3],
+        [3, 3, 3, 3, 3, 3, 3],
+        [6, 3, 6, 6, 6, 6], // cvt-1,3,4,5,6 high (positive reversed), cvt-2 neutral (negative)
+        [3, 3, 3, 3, 3, 3]
+      )
+
+      const result = generateAssessmentResult(responses)
+
+      expect(result.customDimensions.cvt.score).toBeLessThan(33)
+      expect(result.customDimensions.cvt.level).toBe('bajo')
+    })
+
+    it('increases CVT risk when negative interference items are high', () => {
+      const responses = createFullAssessment(
+        [3, 3, 3, 3, 3, 3],
+        [3, 3, 3, 3, 3],
+        [3, 3, 3, 3, 3, 3],
+        [3, 3, 3, 3, 3, 3, 3],
+        [3, 6, 3, 3, 3, 3], // cvt-2 high (negative)
+        [3, 3, 3, 3, 3, 3]
+      )
+
+      const result = generateAssessmentResult(responses)
+
+      expect(result.customDimensions.cvt.score).toBeGreaterThan(50)
+      expect(result.customDimensions.cvt.level).toBe('moderado')
     })
   })
 })
