@@ -107,13 +107,16 @@ const AdminPage: React.FC = () => {
   const [password, setPassword] = useState('')
   const [loginError, setLoginError] = useState('')
 
-  const { isAuthenticated, login } = useAuth()
+  const { isAuthenticated, isLoading: authLoading, login, logout } = useAuth()
 
   useEffect(() => {
-    fetchAppointments()
-    fetchLeads()
-    fetchAnalytics()
-    fetchEmailSequences()
+    if (isAuthenticated) {
+      fetchAppointments()
+      fetchLeads()
+      fetchAnalytics()
+      fetchEmailSequences()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchAppointments = async () => {
@@ -235,11 +238,20 @@ const AdminPage: React.FC = () => {
     setTimeout(() => setCopiedHash(null), 2000)
   }
 
-  const handleLogin = (e: React.FormEvent) => {
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoginError('')
-    if (!login(password)) {
-      setLoginError('Contraseña incorrecta. Intenta de nuevo.')
+    setIsLoggingIn(true)
+
+    try {
+      const success = await login(password)
+      if (!success) {
+        setLoginError('Contraseña incorrecta. Intenta de nuevo.')
+      }
+    } finally {
+      setIsLoggingIn(false)
     }
   }
 
@@ -278,6 +290,14 @@ const AdminPage: React.FC = () => {
     }
   }
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4 py-8 pt-24 bg-surface">
+        <div className="w-8 h-8 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 py-8 pt-24 bg-surface">
@@ -301,9 +321,10 @@ const AdminPage: React.FC = () => {
             )}
             <button
               type="submit"
-              className="w-full bg-primary text-white font-bold py-3 rounded-lg hover:bg-primary/90 transition-colors"
+              disabled={isLoggingIn}
+              className="w-full bg-primary text-white font-bold py-3 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Ingresar
+              {isLoggingIn ? 'Verificando...' : 'Ingresar'}
             </button>
           </form>
         </div>
@@ -313,13 +334,22 @@ const AdminPage: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 pt-24">
-      <div className="mb-8">
-        <h1 className="font-display text-3xl font-bold text-primary-900 mb-2">
-          Panel de Administración
-        </h1>
-        <p className="text-primary-600">
-          Gestiona leads, citas, evaluaciones y visualiza métricas de conversión.
-        </p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="font-display text-3xl font-bold text-primary-900 mb-2">
+            Panel de Administración
+          </h1>
+          <p className="text-primary-600">
+            Gestiona leads, citas, evaluaciones y visualiza métricas de conversión.
+          </p>
+        </div>
+        <button
+          onClick={logout}
+          className="px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-900 border border-primary-200 rounded-lg hover:bg-primary-50 transition-colors"
+          data-testid="admin-logout-button"
+        >
+          Cerrar sesión
+        </button>
       </div>
 
       {/* Tabs */}
