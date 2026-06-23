@@ -105,7 +105,29 @@ function sendImmediateUnifiedEmail(string $email, string $product = 'pulso-h'): 
             return false;
         }
 
-        $config = require_once dirname($senderPath) . '/config.php';
+        // Cargar config manualmente para evitar colisiones con las variables
+        // de entorno/constantes locales de PULSO-H.
+        global $SMTP_HOST, $SMTP_PORT, $SMTP_SECURE, $SMTP_USER, $SMTP_PASS;
+        $config = [
+            'database' => [
+                'host' => ACRUX_DB_HOST,
+                'dbname' => ACRUX_DB_NAME,
+                'user' => ACRUX_DB_USER,
+                'password' => ACRUX_DB_PASS,
+            ],
+            'smtp' => [
+                'host' => $SMTP_HOST,
+                'port' => $SMTP_PORT,
+                'encryption' => $SMTP_SECURE ? 'ssl' : '',
+                'username' => $SMTP_USER,
+                'password' => $SMTP_PASS,
+                'from_email' => $SMTP_USER,
+                'from_name' => 'ACRUX Consultores',
+                'reply_to' => $SMTP_USER,
+                'auth' => true,
+            ],
+        ];
+
         $sender = new UnifiedEmailSender($config);
         $sender->processPendingSequences($product, 0, $email);
 
