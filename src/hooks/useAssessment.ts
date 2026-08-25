@@ -115,6 +115,12 @@ export const useAssessment = (): UseAssessmentReturn => {
       return null // Need at least 80% completion
     }
 
+    try {
+      localStorage.setItem('lm-pulso-h-completed', 'true')
+    } catch {
+      // ignore
+    }
+
     return generateAssessmentResult(responses)
   }
 
