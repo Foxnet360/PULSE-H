@@ -13,7 +13,7 @@
     "deploy": "./deploy.sh"
   },
   "dependencies": {
-    "@acrux/design-tokens": "file:../acrux-design-tokens",
+    "@acrux/design-tokens": "workspace:*",
     "@sentry/react": "^10.51.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.2",
