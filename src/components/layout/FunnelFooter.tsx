@@ -1,5 +1,6 @@
 
 
+import { Link } from 'react-router-dom';
 import { Shield, Lock, CheckCircle, Mail } from 'lucide-react';
 
 export default function FunnelFooter() {
@@ -31,8 +32,8 @@ export default function FunnelFooter() {
           <div>
             <h4 className="font-semibold text-white mb-4 text-sm uppercase tracking-wider">PULSO-H</h4>
             <ul className="space-y-2 text-sm text-white/70">
-              <li><a href="/" className="hover:text-white transition-colors">Inicio</a></li>
-              <li><a href="/evaluar" className="hover:text-white transition-colors">Evaluar bienestar</a></li>
+              <li><Link to="/" className="hover:text-white transition-colors">Inicio</Link></li>
+              <li><Link to="/evaluar" className="hover:text-white transition-colors">Evaluar bienestar</Link></li>
               <li><a href="https://acrux.life/soluciones" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Nuestros servicios</a></li>
             </ul>
           </div>

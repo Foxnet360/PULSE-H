@@ -1,7 +1,6 @@
 import React, { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
-import Layout from './components/layout/Layout'
 import FunnelLayout from './components/layout/FunnelLayout'
 import LoadingScreen from './components/ui/LoadingScreen'
 
@@ -69,31 +68,8 @@ const FunnelRoutes: React.FC = () => (
   </FunnelLayout>
 )
 
-// App routes that use standard Layout
-const AppRoutes: React.FC = () => (
-  <Layout>
-    <Suspense fallback={<LoadingScreen />}>
-      <AnimatePresence mode="wait">
-        <Routes>
-          <Route path="/dashboard" element={<PageWrapper><DashboardPage /></PageWrapper>} />
-          <Route path="/admin" element={<PageWrapper><AdminPage /></PageWrapper>} />
-          <Route path="/privacidad" element={<PageWrapper><PrivacyPage /></PageWrapper>} />
-          <Route path="*" element={<PageWrapper><NotFoundPage /></PageWrapper>} />
-        </Routes>
-      </AnimatePresence>
-    </Suspense>
-  </Layout>
-)
-
 function App() {
-  const location = useLocation()
-  
-  // Determine if current route is a funnel route
-  const isFunnelRoute = ['/', '/evaluar', '/gracias', '/agendar', '/resultados'].some(
-    path => location.pathname === path || location.pathname.startsWith('/evaluar/')
-  )
-  
-  return isFunnelRoute ? <FunnelRoutes /> : <AppRoutes />
+  return <FunnelRoutes />
 }
 
 export default App

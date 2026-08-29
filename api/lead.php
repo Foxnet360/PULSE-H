@@ -222,12 +222,8 @@ switch ($method) {
             updateLeadScore($db, $leadId, $eventsScore);
         }
         
-        // Create email sequence
-        createEmailSequence($leadId);
-
         // Register in unified nurturing if GDPR consent is given.
         // Email 1 is sent immediately only if marketing consent is also given.
-        $emailResult = null;
         $unifiedSequenceId = null;
         $welcomeEmailChannel = null;
         $email1Sent = false;
@@ -257,19 +253,12 @@ switch ($method) {
             }
         }
 
-        // Fallback to legacy welcome email if unified channel could not send Email 1
-        // and marketing consent is present.
-        if (!empty($data['marketing_consent']) && !$email1Sent) {
-            $emailResult = sendWelcomeEmail($leadId);
-            $welcomeEmailChannel = !empty($emailResult['success']) ? 'legacy' : null;
-        }
-
         sendResponse([
             'success' => true,
             'id' => $leadId,
             'events_processed' => isset($data['events']) ? count($data['events']) : 0,
             'score_added' => $eventsScore,
-            'welcome_email' => $emailResult,
+            'welcome_email' => null,
             'welcome_email_channel' => $welcomeEmailChannel,
             'sequence_id' => $unifiedSequenceId,
         ]);

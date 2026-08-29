@@ -13,7 +13,7 @@
 3. Create a new database:
    - Database name: `u554044004_pulso_h`
    - User: `u554044004_acruxuser` (or create new)
-   - Password: `4Crux2026*` (or set new)
+   - Password: `\u003cYOUR_PASSWORD\u003e` (or set new)
 
 ### 2. Run Schema
 Once database is created, run the schema file:

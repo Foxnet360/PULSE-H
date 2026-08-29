@@ -21,5 +21,14 @@ dist-ssr/
 .env.test.local
 .env.production.local
 
+# Local environment/sensitive config
+config.local.php
+api/config.local.php
+
 # Antigravity agent files
 .atl/
+.codegraph/
+.turbo/
+test-results/
+playwright-report/
+

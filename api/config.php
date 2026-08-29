@@ -32,10 +32,12 @@ $isLocalDev = (
     strpos($host, '127.0.0.1') !== false
 );
 
+$isInternalHost = in_array($host, ['acrux.life', 'www.acrux.life'], true);
+
 $isAllowed = false;
 if ($origin === '') {
-    // Peticiones sin origen (server-to-server, curl, etc.) se permiten si vienen de local
-    $isAllowed = $isLocalDev;
+    // Peticiones sin origen (server-to-server, curl, cron) se permiten desde el host propio o local dev
+    $isAllowed = $isLocalDev || $isInternalHost;
 } else {
     foreach ($allowedOrigins as $allowed) {
         if ($origin === $allowed) {

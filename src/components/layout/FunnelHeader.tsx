@@ -6,7 +6,7 @@ interface FunnelHeaderProps {
   title?: string;
 }
 
-export default function FunnelHeader({ onVolverClick, title = "Acrux Consultores" }: FunnelHeaderProps) {
+export default function FunnelHeader({ onVolverClick, title = "Acrux | PULSO-H" }: FunnelHeaderProps) {
   const handleVolver = (e: React.MouseEvent) => {
     if (onVolverClick) {
       onVolverClick(e);
