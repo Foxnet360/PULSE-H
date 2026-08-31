@@ -11,7 +11,7 @@ export interface ProfileDefinition {
 export const profiles: ProfileDefinition[] = [
   {
     key: 'floreciente',
-    name: 'Floreciente',
+    name: 'Óptimo / Pleno',
     description: 'Tienes altos niveles de bienestar, realización y energía. Tu relación con el trabajo es positiva y sostenible.',
     prevalence: '~15%',
     color: '#4a7c59',
@@ -32,8 +32,8 @@ export const profiles: ProfileDefinition[] = [
   },
   {
     key: 'requete',
-    name: 'Requete',
-    description: 'Sientes agotamiento y desconexión. Es importante tomar acciones preventivas ahora.',
+    name: 'En Alerta',
+    description: 'Sientes fatiga acumulada y desconexión inicial. Es importante tomar acciones preventivas ahora.',
     prevalence: '~22%',
     color: '#c9872c',
   },
