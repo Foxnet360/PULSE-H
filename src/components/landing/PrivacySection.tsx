@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Shield, Lock, Eye, Server, FileCheck, Building2, UserCheck } from 'lucide-react';
+import { Shield, Lock, Eye, Server, FileCheck, Building2, UserCheck, ArrowRight } from 'lucide-react';
 
 interface PrivacyFeature {
   icon: React.ElementType;

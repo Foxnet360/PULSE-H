@@ -19,23 +19,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const response = await fetch('/api/auth.php', {
           method: 'GET',
           credentials: 'include',
-        })
-        if (response.ok) {
-          const data = await response.json()
-          setIsAuthenticated(!!data.authenticated)
+        });
+        const contentType = response.headers.get('content-type');
+        if (response.ok && contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          setIsAuthenticated(!!data.authenticated);
         } else {
-          setIsAuthenticated(false)
+          setIsAuthenticated(false);
         }
       } catch (error) {
-        console.error('Auth status check failed:', error)
-        setIsAuthenticated(false)
+        setIsAuthenticated(false);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    checkStatus()
-  }, [])
+    checkStatus();
+  }, []);
 
   const login = useCallback(async (password: string): Promise<boolean> => {
     try {
