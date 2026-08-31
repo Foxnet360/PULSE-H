@@ -1,39 +1,39 @@
-import React from 'react'
-import { motion } from 'motion/react'
-import { Shield, Lock, Eye, Server, FileCheck, ArrowRight } from 'lucide-react'
+import React from 'react';
+import { motion } from 'motion/react';
+import { Shield, Lock, Eye, Server, FileCheck, Building2, UserCheck } from 'lucide-react';
 
 interface PrivacyFeature {
-  icon: React.ElementType
-  title: string
-  description: string
+  icon: React.ElementType;
+  title: string;
+  description: string;
 }
 
 const privacyFeatures: PrivacyFeature[] = [
   {
-    icon: Server,
-    title: 'Procesamiento Local',
-    description: 'Todos los cálculos se realizan en tu navegador. Tus respuestas nunca salen de tu dispositivo.',
+    icon: UserCheck,
+    title: 'Anonimato 100% Garantizado para Colaboradores',
+    description: 'Tus respuestas individuales son estrictamente privadas. Ningún jefe, directivo ni colega puede ver tus respuestas o perfil personal.',
+  },
+  {
+    icon: Building2,
+    title: 'Visión Agregada para la Dirección de RRHH',
+    description: 'La empresa accede únicamente a datos consolidados y mapas de calor por área cuando se acumula un mínimo de 5 evaluaciones.',
   },
   {
     icon: Lock,
-    title: '100% Anónimo',
-    description: 'No requiere registro ni datos personales. No sabemos quién eres.',
-  },
-  {
-    icon: Eye,
-    title: 'Consentimiento Explícito',
-    description: 'Solo compartimos datos agregados si das tu consentimiento informado.',
+    title: 'Encriptación de Extremo a Extremo (SSL)',
+    description: 'Protocolos de seguridad bancarios para proteger la integridad de los informes y evitar filtraciones de información.',
   },
   {
     icon: FileCheck,
-    title: 'Cumplimiento Normativo',
-    description: 'Diseñado bajo estándares de protección de datos y ética en investigación.',
+    title: 'Cumplimiento Legal Habeas Data Ley 1581',
+    description: 'Alineado con las normativas de protección de datos personales en Colombia y estándares internacionales de salud mental ocupacional.',
   },
-]
+];
 
 const PrivacySection: React.FC = () => {
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white font-sans">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -42,17 +42,17 @@ const PrivacySection: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium mb-6">
-            <Shield className="w-4 h-4" />
-            <span>Privacidad garantizada</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-full text-xs font-bold mb-6">
+            <Shield className="w-4 h-4 text-emerald-600" />
+            <span>Garantía de Doble Confianza B2B &amp; B2C</span>
           </div>
 
-          <h2 className="font-display text-3xl sm:text-4xl font-bold text-primary-900 mb-4">
-            Tu privacidad es nuestra prioridad
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-primary-900 mb-4 tracking-tight">
+            Confidencialidad absoluta para el equipo, claridad estratégica para la dirección
           </h2>
-          <p className="text-lg text-primary-600 max-w-2xl mx-auto">
-            Entendemos que hablar de bienestar mental es sensible. Por eso diseñamos
-            PULSO-H con los más altos estándares de privacidad desde el primer día.
+          <p className="text-base sm:text-lg text-primary-600 max-w-3xl mx-auto font-sans leading-relaxed">
+            Para obtener datos reales sobre el burnout y la salud mental, el colaborador debe responder sin temor a represalias.
+            Por eso PULSO-H separa radicalmente los resultados individuales de la analítica organizacional.
           </p>
         </motion.div>
 
