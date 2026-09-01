@@ -20,29 +20,47 @@ const ResultsPage: React.FC = () => {
   const [expandedAction, setExpandedAction] = useState<string | null>(null)
 
   useEffect(() => {
-    // Check if user has completed lead capture
-    const leadId = sessionStorage.getItem('pulso-h-lead-id')
-    if (!leadId) {
-      // Redirect to evaluation if no lead_id
-      navigate('/evaluar', { replace: true })
-      return
+    const isDemo = window.location.hash === '#demo';
+
+    if (isDemo) {
+      const mockResult: AssessmentResult = {
+        id: 'demo-result-123',
+        timestamp: new Date(),
+        dimensions: {
+          energia: { score: 3.8, percentage: 76, level: 'Agotamiento Alto' },
+          conexion: { score: 3.2, percentage: 64, level: 'Cinismo Moderado' },
+          proposito: { score: 4.1, percentage: 82, level: 'Realización Alta' },
+          entorno: { score: 3.5, percentage: 70, level: 'Carga Elevada' },
+          equilibrio: { score: 2.8, percentage: 56, level: 'Falta de Desconexión' },
+          fortaleza: { score: 3.9, percentage: 78, level: 'Resiliencia Buena' },
+        },
+        irp: 58,
+        irpZone: 'naranja',
+        profile: 'requete',
+        profileName: 'En Alerta',
+        profileDescription: 'Sientes fatiga acumulada y desconexión inicial. Es importante tomar acciones preventivas ahora.',
+      };
+
+      setResult(mockResult);
+      setInterventions(getRecommendedInterventions(mockResult.profile, mockResult.dimensions));
+      return;
     }
 
-    const savedResult = sessionStorage.getItem('pulso-h-result')
+    const savedResult = sessionStorage.getItem('pulso-h-result');
     if (savedResult) {
-      const parsed = JSON.parse(savedResult)
-      // Convert string dates back to Date objects
-      parsed.timestamp = new Date(parsed.timestamp)
-      setResult(parsed)
-
-      // Get recommendations
-      const recs = getRecommendedInterventions(parsed.profile, parsed.dimensions)
-      setInterventions(recs)
-      
-      // Track results view
-      trackResultsView()
+      const parsed = JSON.parse(savedResult);
+      parsed.timestamp = new Date(parsed.timestamp);
+      setResult(parsed);
+      setInterventions(getRecommendedInterventions(parsed.profile, parsed.dimensions));
+      trackResultsView();
+      return;
     }
-  }, [navigate])
+
+    const leadId = sessionStorage.getItem('pulso-h-lead-id');
+    if (!leadId) {
+      navigate('/evaluar', { replace: true });
+    }
+  }, [navigate]);
 
   if (!result) {
     return (

@@ -18,15 +18,17 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 // Route guard for results - requires lead_id in sessionStorage
 const RequireLead: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const leadId = sessionStorage.getItem('pulso-h-lead-id')
-  const location = useLocation()
+  const leadId = sessionStorage.getItem('pulso-h-lead-id');
+  const hasResult = sessionStorage.getItem('pulso-h-result');
+  const isDemo = window.location.hash === '#demo';
+  const location = useLocation();
   
-  if (!leadId) {
-    return <Navigate to="/evaluar" state={{ from: location }} replace />
+  if (!leadId && !hasResult && !isDemo) {
+    return <Navigate to="/evaluar" state={{ from: location }} replace />;
   }
   
-  return <>{children}</>
-}
+  return <>{children}</>;
+};
 
 // Page wrapper with animation
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (

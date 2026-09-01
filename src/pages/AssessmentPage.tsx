@@ -7,7 +7,8 @@ import CircularProgress from '../components/ui/CircularProgress'
 import LeadCaptureModal from '../components/leads/LeadCaptureModal'
 import { useLeadCapture } from '../hooks/useLeadCapture'
 import { useAssessmentTimer } from '../hooks/useAssessmentTimer'
-import { ArrowRight, ArrowLeft, Heart, Clock, Save } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Heart, Clock, Save, Lightbulb } from 'lucide-react'
+import { itemContextMap } from '../utils/questionContext'
 import { trackAssessmentStart, trackQuestionAnswered, trackAssessmentComplete, trackLeadCaptureStart, trackLeadCaptureComplete } from '../utils/analytics'
 
 interface AssessmentPageProps {
@@ -104,48 +105,76 @@ const AssessmentPage: React.FC<AssessmentPageProps> = ({ evaluationHash, onCompl
     }
   }, [responses, minutesElapsed, showToast])
 
+  // Auto-scroll to top when module changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentModule]);
+
   const handleNext = async () => {
     if (currentModule < assessmentModules.length - 1) {
-      nextModule()
+      nextModule();
     } else {
-      const result = getResult()
+      const result = getResult();
       if (result) {
         // Store result in sessionStorage for results page
-        sessionStorage.setItem('pulso-h-result', JSON.stringify(result))
-        setAssessmentResult(result)
-        setShowLeadCapture(true)
+        sessionStorage.setItem('pulso-h-result', JSON.stringify(result));
+        setAssessmentResult(result);
+        setShowLeadCapture(true);
         
         // Track assessment complete
-        trackAssessmentComplete(minutesElapsed, result.profileName, result.irp)
-        trackLeadCaptureStart()
+        trackAssessmentComplete(minutesElapsed, result.profileName, result.irp);
+        trackLeadCaptureStart();
 
         // Notify parent (organization assessment wrapper) so it can persist response
         if (onComplete) {
           try {
-            await onComplete(result)
+            await onComplete(result);
           } catch (error) {
-            console.error('Failed to persist organizational response:', error)
+            console.error('Failed to persist organizational response:', error);
           }
         }
       }
     }
-  }
+  };
 
   const handleLeadCapture = async (email: string, gdprConsent: boolean, marketingConsent: boolean, extraData?: { name?: string; company?: string; concernArea?: string }) => {
+    // Ensure lead id is always stored to allow immediate access to results page
+    sessionStorage.setItem('pulso-h-lead-id', email);
+    sessionStorage.setItem('pulso-h-lead-email', email);
+
     await captureLead(email, {
       profile: assessmentResult?.profileName,
       irp: assessmentResult?.irp,
       gdprConsent,
       marketingConsent,
       ...extraData,
-    })
+    });
     
+    // Also post to local leads API for email sender & admin persistence
+    try {
+      await fetch('/api/contact.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: extraData?.name || 'Evaluado PULSO-H',
+          email,
+          company: extraData?.company || 'Organización',
+          tool: 'PULSO-H',
+          profile: assessmentResult?.profileName,
+          irp: assessmentResult?.irp,
+          gdprConsent,
+        }),
+      });
+    } catch {
+      // Non-blocking
+    }
+
     // Track lead capture complete
-    trackLeadCaptureComplete(assessmentResult?.profileName || '', marketingConsent)
+    trackLeadCaptureComplete(assessmentResult?.profileName || '', marketingConsent);
     
-    // Navigate to Thank You Page after successful capture
-    navigate('/gracias')
-  }
+    // Direct user to Executive Results Page
+    navigate('/resultados');
+  };
 
   const getEmojiForValue = (value: number): string => {
     if (value <= 1) return '😌'
@@ -388,11 +417,21 @@ const AssessmentPage: React.FC<AssessmentPageProps> = ({ evaluationHash, onCompl
               key={item.id}
               className="bg-white rounded-2xl shadow-sm border border-primary-100 p-6"
             >
-              <div className="flex items-start gap-4 mb-6">
+              <div className="flex items-start gap-4 mb-4">
                 <span className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-sm font-medium text-primary-700">
                   {index + 1}
                 </span>
-                <p className="text-primary-900 font-medium pt-1">{item.text}</p>
+                <div className="flex-1">
+                  <p className="text-primary-900 font-bold text-base leading-snug pt-0.5">{item.text}</p>
+                  {itemContextMap[item.id] && (
+                    <div className="mt-3 bg-amber-50 border border-amber-200/80 rounded-xl p-3 flex items-start gap-2.5 text-amber-900">
+                      <Lightbulb className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <p className="text-xs leading-relaxed text-slate-700">
+                        <strong className="font-bold text-amber-950">💡 ¿Por qué importa este indicador?</strong> {itemContextMap[item.id]}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="px-4">

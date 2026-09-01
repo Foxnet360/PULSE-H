@@ -133,21 +133,44 @@ const AdminPage: React.FC = () => {
 
   const fetchLeads = async () => {
     try {
-      const response = await fetch('/api/lead.php?hot=true')
-      const data = await response.json()
-      if (Array.isArray(data)) {
-        setHotLeads(data)
+      const response = await fetch('/api/lead.php?hot=true');
+      const contentType = response.headers.get('content-type');
+      if (response.ok && contentType?.includes('application/json')) {
+        const data = await response.json();
+        if (Array.isArray(data)) setHotLeads(data);
       }
-      
-      const allResponse = await fetch('/api/lead.php')
-      const allData = await allResponse.json()
-      if (Array.isArray(allData)) {
-        setLeads(allData)
+
+      const allResponse = await fetch('/api/lead.php');
+      const allContentType = allResponse.headers.get('content-type');
+      if (allResponse.ok && allContentType?.includes('application/json')) {
+        const allData = await allResponse.json();
+        if (Array.isArray(allData)) setLeads(allData);
+      } else {
+        throw new Error('Non-JSON response');
       }
-    } catch (error) {
-      console.error('Failed to fetch leads:', error)
+    } catch {
+      // Fallback to local stored leads
+      try {
+        const stored = localStorage.getItem('pulso-h-leads');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          const localLeads: Lead[] = parsed.map((l: any, idx: number) => ({
+            id: l.backendId || idx + 1,
+            email: l.email,
+            name: l.email.split('@')[0],
+            profile: l.profile || 'Resiliente',
+            score: l.irp || l.score || 45,
+            status: 'Completado',
+            created_at: new Date(l.createdAt || Date.now()).toISOString().split('T')[0],
+          }));
+          setLeads(localLeads);
+          setHotLeads(localLeads.filter(l => l.score > 50));
+        }
+      } catch (e) {
+        console.error('Failed to parse local leads fallback:', e);
+      }
     }
-  }
+  };
 
   const fetchAnalytics = async () => {
     try {
