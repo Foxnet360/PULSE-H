@@ -60,7 +60,7 @@ const FunnelRoutes: React.FC = () => (
               </RequireLead>
             </PageWrapper>
           } />
-          <Route path="/dashboard" element={<PageWrapper><DashboardPage /></PageWrapper>} />
+          <Route path="/dashboard" element={<PageWrapper><CompanyDashboardPage /></PageWrapper>} />
           <Route path="/empresa/dashboard" element={<PageWrapper><CompanyDashboardPage /></PageWrapper>} />
           <Route path="/admin" element={<PageWrapper><AdminPage /></PageWrapper>} />
           <Route path="/privacidad" element={<PageWrapper><PrivacyPage /></PageWrapper>} />
