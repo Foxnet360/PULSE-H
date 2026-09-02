@@ -13,7 +13,11 @@ import TestimonialsSection from '../components/landing/TestimonialsSection';
 import FAQSection from '../components/landing/FAQSection';
 import SocialProofBadge from '../components/landing/SocialProofBadge';
 
+import CompanyRegistrationModal from '../components/landing/CompanyRegistrationModal';
+
 const LandingPage: React.FC = () => {
+  const [isCompanyModalOpen, setIsCompanyModalOpen] = React.useState(false);
+
   useEffect(() => {
     trackLandingView();
   }, []);
@@ -21,7 +25,13 @@ const LandingPage: React.FC = () => {
   return (
     <div className="space-y-0 font-sans">
       {/* Hero Section con Doble Entrada (B2B vs B2C) */}
-      <HeroSection />
+      <HeroSection onOpenCompanyModal={() => setIsCompanyModalOpen(true)} />
+
+      {/* Modal B2B Empresa */}
+      <CompanyRegistrationModal
+        isOpen={isCompanyModalOpen}
+        onClose={() => setIsCompanyModalOpen(false)}
+      />
 
       {/* Context Bridge */}
       <section className="bg-primary-50 py-4 border-y border-primary-100">

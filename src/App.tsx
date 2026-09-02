@@ -11,7 +11,7 @@ const OrganizationAssessmentPage = lazy(() => import('./pages/OrganizationAssess
 const ResultsPage = lazy(() => import('./pages/ResultsPage'))
 const ThankYouPage = lazy(() => import('./pages/ThankYouPage'))
 const SchedulePage = lazy(() => import('./pages/SchedulePage'))
-const DashboardPage = lazy(() => import('./pages/DashboardPage'))
+const CompanyDashboardPage = lazy(() => import('./pages/CompanyDashboardPage'))
 const AdminPage = lazy(() => import('./pages/AdminPage'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
@@ -61,6 +61,7 @@ const FunnelRoutes: React.FC = () => (
             </PageWrapper>
           } />
           <Route path="/dashboard" element={<PageWrapper><DashboardPage /></PageWrapper>} />
+          <Route path="/empresa/dashboard" element={<PageWrapper><CompanyDashboardPage /></PageWrapper>} />
           <Route path="/admin" element={<PageWrapper><AdminPage /></PageWrapper>} />
           <Route path="/privacidad" element={<PageWrapper><PrivacyPage /></PageWrapper>} />
           <Route path="*" element={<PageWrapper><NotFoundPage /></PageWrapper>} />

@@ -4,7 +4,11 @@ import { motion } from 'motion/react';
 import { Heart, ArrowRight, ShieldCheck, Building2, UserCheck, Clock, BarChart3 } from 'lucide-react';
 import SocialProofBadge from './SocialProofBadge';
 
-const HeroSection: React.FC = () => {
+interface HeroSectionProps {
+  onOpenCompanyModal?: () => void;
+}
+
+const HeroSection: React.FC<HeroSectionProps> = ({ onOpenCompanyModal }) => {
   return (
     <section className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary-50 via-surface to-primary-100 overflow-hidden font-sans">
       {/* Background decoration */}
@@ -70,16 +74,16 @@ const HeroSection: React.FC = () => {
                 <h3 className="font-display font-bold text-lg text-primary-900">Crear Diagnóstico de Empresa</h3>
               </div>
               <p className="text-xs text-primary-700 leading-relaxed mb-4">
-                Generá un enlace único para tu equipo y accedé al Dashboard Agregado con mapas de calor y recomendaciones.
+                Generá un enlace único para tu equipo (hasta 10 enlaces gratis) y accedé a la analítica de clima.
               </p>
             </div>
-            <Link
-              to="/admin"
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-accent text-primary-900 font-bold text-sm rounded-xl hover:bg-accent-dark transition-all shadow-md group-hover:shadow-lg"
+            <button
+              onClick={() => onOpenCompanyModal ? onOpenCompanyModal() : null}
+              className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-accent text-primary-900 font-bold text-sm rounded-xl hover:bg-accent-dark transition-all shadow-md group-hover:shadow-lg cursor-pointer"
             >
               <span>Configurar Evaluación de Empresa</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </button>
           </div>
 
           {/* B2C Option: Colaborador / Empleado */}
