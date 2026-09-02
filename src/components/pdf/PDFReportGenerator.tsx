@@ -213,7 +213,21 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({ result }) => {
         return [label, `${val}%`, status];
       });
 
-      autoTable(doc, {
+      const runAutoTable = (options: any) => {
+        try {
+          if (typeof autoTable === 'function') {
+            autoTable(doc, options);
+          } else if (typeof (doc as any).autoTable === 'function') {
+            (doc as any).autoTable(options);
+          } else if (typeof (autoTable as any)?.default === 'function') {
+            (autoTable as any).default(doc, options);
+          }
+        } catch (err) {
+          console.warn('autoTable invocation fallback:', err);
+        }
+      };
+
+      runAutoTable({
         startY: y,
         head: [['Dimensión de Bienestar', 'Puntaje (%)', 'Estado de Sostenibilidad']],
         body: tableData,
@@ -238,7 +252,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({ result }) => {
           1: { halign: 'center', cellWidth: 35 },
           2: { halign: 'center', cellWidth: 53, fontStyle: 'bold' },
         },
-        didParseCell: (dataCell) => {
+        didParseCell: (dataCell: any) => {
           if (dataCell.section === 'body' && dataCell.column.index === 2) {
             const text = String(dataCell.cell.raw);
             if (text === 'Cuidado Requerido') {
