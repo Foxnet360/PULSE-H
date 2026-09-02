@@ -2,9 +2,9 @@ import React, { useEffect, useState, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AssessmentResult, Intervention } from '../types/assessment';
 import { getRecommendedInterventions } from '../data/interventionData';
-import { getProfileColor, getIRPZoneColor } from '../utils/assessmentEngine';
-import { Heart, Sparkles, Shield, User, ArrowRight, Activity } from 'lucide-react';
-import { trackResultsView, trackPDFDownload, trackCTAClick } from '../utils/analytics';
+import { getProfileColor } from '../utils/assessmentEngine';
+import { Heart, Sparkles, User, Activity } from 'lucide-react';
+import { trackResultsView } from '../utils/analytics';
 import DimensionRadarChart from '../components/dashboard/DimensionRadarChart';
 
 const PDFReportGenerator = lazy(() => import('../components/pdf/PDFReportGenerator'));
@@ -99,6 +99,7 @@ const ResultsPage: React.FC = () => {
 
   const profileColor = getProfileColor(result.profile);
 
+  // Format dimensions array for Radar Chart
   const radarDimensions = Object.entries(result.dimensions).map(([key, dim]) => ({
     key,
     label: dimensionLabels[key] ? dimensionLabels[key].split(' (')[0] : key,
@@ -107,6 +108,7 @@ const ResultsPage: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 pt-24 font-sans space-y-8">
+      {/* Executive Header Banner - Centered on the Human Being */}
       <div className="bg-white rounded-3xl p-8 md:p-10 shadow-xl border border-slate-200/80 text-left space-y-4 relative overflow-hidden">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary-50 border border-primary-200 text-primary-700 font-bold text-xs uppercase tracking-wider">
           <Heart className="w-4 h-4 text-accent fill-accent" />
@@ -117,180 +119,134 @@ const ResultsPage: React.FC = () => {
           Tu Estado de Bienestar: <span style={{ color: profileColor }} className="underline decoration-accent">{result.profileName}</span>
         </h1>
 
+        <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
+          {result.profileDescription}
+        </p>
 
-      {/* Action Plan */}
-      {interventions && (
-        <div className="bg-white rounded-2xl shadow-sm border border-primary-100 p-8 mb-8">
-          <h2 className="font-display text-2xl font-bold text-primary-900 mb-6">
-            Plan de Acción Personalizado
-          </h2>
+        {/* Holistic Reassurance Pill */}
+        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 flex items-start gap-3 mt-4">
+          <Sparkles className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+            <strong className="font-bold text-slate-900">Enfoque ACRUX:</strong> En nuestra firma creemos que las organizaciones prósperas nacen de individuos sanos, valorados y escuchados. Este informe no es una etiqueta, sino una hoja de ruta para cuidar tu energía y potencial humano.
+          </p>
+        </div>
+      </div>
 
-          <div className="space-y-4">
-            {[
-              { key: 'immediate', label: 'Acción Inmediata', intervention: interventions.immediate },
-              { key: 'short', label: 'Acción Corto Plazo', intervention: interventions.short },
-              { key: 'medium', label: 'Acción Medio Plazo', intervention: interventions.medium },
-            ].map(({ key, label, intervention }) => (
-              <div
-                key={key}
-                className="border border-primary-100 rounded-xl overflow-hidden"
-              >
-                <button
-                  onClick={() => toggleAction(intervention.id)}
-                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-primary-50 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="px-3 py-1 bg-accent/10 text-accent text-xs font-medium rounded-full">
-                      {label}
-                    </span>
-                    <span className="font-medium text-primary-900">{intervention.title}</span>
-                  </div>
-                  {expandedAction === intervention.id ? (
-                    <ChevronUp className="w-5 h-5 text-primary-400" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-primary-400" />
-                  )}
-                </button>
-
-                {expandedAction === intervention.id && (
-                  <div className="px-6 pb-4 border-t border-primary-100 pt-4">
-                    <p className="text-primary-700 mb-4">{intervention.description}</p>
-
-                    <div className="flex items-center gap-4 mb-4 text-sm">
-                      <span className="text-primary-500">
-                        ⏱️ {intervention.duration}
-                      </span>
-                      <span className="text-primary-500">
-                        📊 {intervention.evidence}
-                      </span>
-                    </div>
-
-                    <ol className="list-decimal list-inside space-y-2">
-                      {intervention.actions.map((action, index) => (
-                        <li key={index} className="text-primary-700">{action}</li>
-                      ))}
-                    </ol>
-                  </div>
-                )}
-              </div>
-            ))}
+      {/* Holistic Alert Banner (Replaces economic loss alert with Human Sustainability) */}
+      <div className="bg-gradient-to-r from-amber-50 via-primary-50/30 to-amber-50 border border-amber-200 rounded-3xl p-6 sm:p-8">
+        <div className="flex items-start gap-4">
+          <div className="p-3 bg-amber-100/80 rounded-2xl text-amber-700 flex-shrink-0">
+            <Activity className="w-6 h-6" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="font-display text-lg sm:text-xl font-bold text-slate-900">
+              🌱 Análisis de Sostenibilidad Personal &amp; Clima Laboral
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              Tu Índice de Riesgo Psicosocial (IRP) se encuentra en <strong className="text-slate-900 font-bold">{result.irp}%</strong> (Zona {result.irpZone.toUpperCase()}).
+              Esto indica la necesidad de introducir pausas activas, balance de cargas y espacios de recuperación sostenibles para resguardar tu salud mental y motivación.
+            </p>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Testimonials */}
-      {testimonials.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-sm border border-primary-100 p-8 mb-8">
-          <h2 className="font-display text-2xl font-bold text-primary-900 mb-6 flex items-center gap-2">
-            <TrendingUp className="w-6 h-6 text-accent" />
-            Casos de éxito similares
+      {/* Radar Chart & Dimension Analysis */}
+      <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200/80 space-y-8">
+        <div className="text-center md:text-left space-y-2">
+          <h2 className="font-display text-2xl font-bold text-slate-900">
+            Mapa Holístico de Dimensiones Evaluadas
           </h2>
+          <p className="text-xs sm:text-sm text-slate-500">
+            Visualización radial del balance entre tu energía, entorno, propósito y recursos de resiliencia.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          {/* Radar Chart Component */}
+          <div className="flex justify-center p-4 bg-slate-50/50 rounded-2xl border border-slate-100">
+            <DimensionRadarChart dimensions={radarDimensions} size={340} />
+          </div>
+
+          {/* Dimension Detailed List with Correct Labels */}
           <div className="space-y-4">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="bg-primary-50 rounded-xl p-6">
-                <p className="text-primary-700 italic mb-4">"{testimonial.quote}"</p>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-primary-900">{testimonial.author}</p>
-                    <p className="text-sm text-primary-500">{testimonial.role} - {testimonial.company}</p>
+            {Object.entries(result.dimensions).map(([key, dimension]) => {
+              const label = dimensionLabels[key] || dimensionLabels[key.toLowerCase()] || key;
+              const val = dimension.score !== undefined ? (dimension.score <= 5 ? Math.round((dimension.score / 5) * 100) : dimension.score) : dimension.percentage || 60;
+              const statusColor = val >= 70 ? 'bg-emerald-500' : val >= 50 ? 'bg-amber-500' : 'bg-red-500';
+
+              return (
+                <div key={key} className="bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs sm:text-sm font-bold text-slate-800">{label}</span>
+                    <span className="text-xs font-bold text-primary-700 font-mono">{val}%</span>
                   </div>
-                  <span className="px-3 py-1 bg-accent/10 text-accent text-sm font-medium rounded-full">
-                    {testimonial.metric}
-                  </span>
+                  <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                    <div
+                      className={`h-full ${statusColor} rounded-full transition-all duration-500`}
+                      style={{ width: `${val}%` }}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Holistic Recommendations & Action Plan */}
+      {interventions && (
+        <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200/80 space-y-6">
+          <h2 className="font-display text-2xl font-bold text-slate-900">
+            Recomendaciones para tu Bienestar Integrado
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-primary-50/60 rounded-2xl p-6 border border-primary-100 space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-primary-700 font-mono">Acción Inmediata (Semana 1)</span>
+              <h3 className="font-bold text-slate-900 text-base">{interventions.immediate.title}</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">{interventions.immediate.description}</p>
+            </div>
+
+            <div className="bg-amber-50/60 rounded-2xl p-6 border border-amber-100 space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-700 font-mono">Hábitos a Corto Plazo (Mes 1)</span>
+              <h3 className="font-bold text-slate-900 text-base">{interventions.short.title}</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">{interventions.short.description}</p>
+            </div>
+
+            <div className="bg-emerald-50/60 rounded-2xl p-6 border border-emerald-100 space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 font-mono">Sostenibilidad (Trimestral)</span>
+              <h3 className="font-bold text-slate-900 text-base">{interventions.medium.title}</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">{interventions.medium.description}</p>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Next Steps Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-primary-100 p-8">
-        <h2 className="font-display text-2xl font-bold text-primary-900 text-center mb-8">
-          ¿Quieres profundizar en tus resultados?
-        </h2>
+      {/* PDF Download & Executive Consultation CTAs */}
+      <div className="bg-gradient-to-br from-[#0D111A] via-[#1B2A4A] to-[#0D111A] text-white rounded-3xl p-8 sm:p-10 shadow-2xl border border-accent/30 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="space-y-2 text-center md:text-left">
+          <h3 className="text-xl sm:text-2xl font-bold font-display text-white">Descargá tu Informe Ejecutivo en PDF</h3>
+          <p className="text-xs sm:text-sm text-slate-300">Descargá el documento completo con tablas de dimensiones y guía de bienestar.</p>
+        </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {/* Internal scheduling */}
-          <Link
-            to="/agendar"
-            onClick={() => trackCTAClick('schedule')}
-            className="group bg-accent-50 rounded-xl p-6 hover:bg-accent-100 transition-colors cursor-pointer block"
-          >
-            <div className="w-12 h-12 bg-accent rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <Calendar className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="font-semibold text-primary-900 mb-2">Agendar consultoría</h3>
-            <p className="text-sm text-primary-600 mb-4">30 minutos gratuitos para interpretar tus resultados de bienestar.</p>
-            <span className="inline-flex items-center text-accent text-sm font-semibold">
-              Agendar ahora
-              <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-            </span>
-          </Link>
+        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+          <Suspense fallback={<div className="text-xs text-white">Cargando PDF...</div>}>
+            <PDFReportGenerator result={result} />
+          </Suspense>
 
-          {/* Services */}
           <a
-            href="https://acrux.life/soluciones"
+            href="https://acrux.life/agendar"
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => trackCTAClick('services')}
-            className="group bg-primary-50 rounded-xl p-6 hover:bg-primary-100 transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-accent text-primary-900 font-bold text-xs sm:text-sm rounded-xl hover:bg-accent-dark transition-all shadow-md"
           >
-            <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <Compass className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="font-semibold text-primary-900 mb-2">Ver soluciones</h3>
-            <p className="text-sm text-primary-600 mb-4">Conoce cómo ayudamos a mejorar el bienestar de equipos como el tuyo.</p>
-            <span className="inline-flex items-center text-primary-600 text-sm font-semibold">
-              Explorar
-              <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-            </span>
+            <User className="w-4 h-4" />
+            <span>Agendar Sesión de Consultoría</span>
           </a>
-
-          {/* PDF */}
-          <Suspense fallback={
-            <div className="group bg-green-50 rounded-xl p-6 flex items-center justify-center">
-              <Loader2 className="w-6 h-6 text-green-600 animate-spin" />
-            </div>
-          }>
-            <PDFReportGenerator
-              result={result}
-              interventions={interventions}
-            >
-              {(generatePDF, isGenerating, progress) => (
-                <button
-                  onClick={() => {
-                    trackPDFDownload()
-                    generatePDF()
-                  }}
-                  disabled={isGenerating}
-                  className="group bg-green-50 rounded-xl p-6 hover:bg-green-100 transition-colors text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    {isGenerating ? (
-                      <Loader2 className="w-6 h-6 text-white animate-spin" />
-                    ) : (
-                      <Download className="w-6 h-6 text-white" />
-                    )}
-                  </div>
-                  <h3 className="font-semibold text-primary-900 mb-2">
-                    {isGenerating ? `Generando PDF... ${progress}%` : 'Descargar informe'}
-                  </h3>
-                  <p className="text-sm text-primary-600 mb-4">Obtén tu reporte completo en PDF para compartir con tu equipo.</p>
-                  <span className="inline-flex items-center text-green-600 text-sm font-semibold">
-                    {isGenerating ? 'Generando...' : 'Descargar'}
-                    {!isGenerating && (
-                      <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                    )}
-                  </span>
-                </button>
-              )}
-            </PDFReportGenerator>
-          </Suspense>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ResultsPage
+export default ResultsPage;
