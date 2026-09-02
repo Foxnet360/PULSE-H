@@ -1,23 +1,37 @@
-import React, { useEffect, useState, lazy, Suspense } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { AssessmentResult, Intervention } from '../types/assessment'
-import { getRecommendedInterventions } from '../data/interventionData'
-import { getProfileColor, getIRPZoneColor } from '../utils/assessmentEngine'
-import { Download, Calendar, ChevronDown, ChevronUp, AlertTriangle, TrendingUp, ArrowRight, Compass, Loader2 } from 'lucide-react'
-import { getTestimonialsByProfile } from '../data/testimonials'
-import { trackResultsView, trackPDFDownload, trackCTAClick } from '../utils/analytics'
+import React, { useEffect, useState, lazy, Suspense } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AssessmentResult, Intervention } from '../types/assessment';
+import { getRecommendedInterventions } from '../data/interventionData';
+import { getProfileColor, getIRPZoneColor } from '../utils/assessmentEngine';
+import { Heart, Sparkles, Shield, User, ArrowRight, Activity } from 'lucide-react';
+import { trackResultsView, trackPDFDownload, trackCTAClick } from '../utils/analytics';
+import DimensionRadarChart from '../components/dashboard/DimensionRadarChart';
 
-const PDFReportGenerator = lazy(() => import('../components/pdf/PDFReportGenerator'))
+const PDFReportGenerator = lazy(() => import('../components/pdf/PDFReportGenerator'));
+
+const dimensionLabels: Record<string, string> = {
+  energia: 'Mi Energía (Agotamiento Emocional)',
+  conexion: 'Mi Conexión (Relación & Empatía)',
+  proposito: 'Mi Propósito (Realización Personal)',
+  entorno: 'Mi Entorno (Factores de Clima)',
+  equilibrio: 'Mi Equilibrio (Vida - Trabajo)',
+  fortaleza: 'Mi Fortaleza (Resiliencia & Recursos)',
+  ae: 'Agotamiento Emocional',
+  dp: 'Despersonalización',
+  rp: 'Realización Personal',
+  for: 'Factores Organizacionales',
+  cvt: 'Conciliación Vida-Trabajo',
+  rri: 'Resiliencia & Recursos',
+};
 
 const ResultsPage: React.FC = () => {
-  const navigate = useNavigate()
-  const [result, setResult] = useState<AssessmentResult | null>(null)
+  const navigate = useNavigate();
+  const [result, setResult] = useState<AssessmentResult | null>(null);
   const [interventions, setInterventions] = useState<{
-    immediate: Intervention
-    short: Intervention
-    medium: Intervention
-  } | null>(null)
-  const [expandedAction, setExpandedAction] = useState<string | null>(null)
+    immediate: Intervention;
+    short: Intervention;
+    medium: Intervention;
+  } | null>(null);
 
   useEffect(() => {
     const isDemo = window.location.hash === '#demo';
@@ -64,171 +78,45 @@ const ResultsPage: React.FC = () => {
 
   if (!result) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8 pt-24">
-        <div className="bg-white rounded-2xl shadow-sm border border-primary-100 p-8 text-center">
-          <h1 className="font-display text-2xl font-bold text-primary-900 mb-4">
+      <div className="max-w-4xl mx-auto px-4 py-8 pt-24 font-sans">
+        <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 text-center">
+          <h1 className="font-display text-2xl font-bold text-slate-900 mb-4">
             No hay resultados disponibles
           </h1>
-          <p className="text-primary-700 mb-6">
+          <p className="text-slate-600 mb-6">
             Completa la evaluación para ver tus resultados.
           </p>
           <button
             onClick={() => navigate('/evaluar')}
-            className="px-6 py-3 bg-accent text-white font-medium rounded-xl hover:bg-accent-dark transition-colors"
+            className="px-6 py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition-colors"
           >
             Comenzar evaluación
           </button>
         </div>
       </div>
-    )
+    );
   }
 
-  const profileColor = getProfileColor(result.profile)
-  const irpColor = getIRPZoneColor(result.irpZone)
+  const profileColor = getProfileColor(result.profile);
 
-
-
-  const toggleAction = (id: string) => {
-    setExpandedAction(expandedAction === id ? null : id)
-  }
-
-  // Calculate productivity metrics
-  const hoursLost = Math.floor(result.irp / 8)
-  const opportunityCost = hoursLost * 250 * 4 // Approx $250 MXN/hour * 4 weeks
-
-  const testimonials = getTestimonialsByProfile(result.profileName)
+  const radarDimensions = Object.entries(result.dimensions).map(([key, dim]) => ({
+    key,
+    label: dimensionLabels[key] ? dimensionLabels[key].split(' (')[0] : key,
+    score: dim.score !== undefined ? (dim.score <= 5 ? Math.round((dim.score / 5) * 100) : dim.score) : dim.percentage || 60,
+  }));
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 pt-24">
-      {/* Urgency Alert Banner */}
-      {result.irp > 50 && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 mb-8">
-          <div className="flex items-start gap-4">
-            <AlertTriangle className="w-8 h-8 text-red-500 flex-shrink-0 mt-1" />
-            <div>
-              <h2 className="font-display text-xl font-bold text-red-800 mb-2">
-                ⚠️ ALERTA DE PRODUCTIVIDAD
-              </h2>
-              <p className="text-red-700 mb-2">
-                Tu IRP de {result.irp} indica riesgo {result.irpZone === 'roja' ? 'ALTO' : result.irpZone === 'naranja' ? 'MODERADO-ALTO' : 'MODERADO'}.
-                Estás perdiendo ~{hoursLost} horas semanales de productividad.
-              </p>
-              <p className="text-red-600 text-sm">
-                Costo estimado: ~${opportunityCost.toLocaleString()} MXN mensuales en pérdida de productividad
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Profile Card */}
-      <div
-        className="bg-white rounded-2xl shadow-lg border-2 p-8 mb-8 text-center"
-        style={{ borderColor: profileColor }}
-      >
-        <div
-          className="inline-block px-4 py-1 rounded-full text-white text-sm font-medium mb-4"
-          style={{ backgroundColor: profileColor }}
-        >
-          {result.profileName}
+    <div className="max-w-5xl mx-auto px-4 py-8 pt-24 font-sans space-y-8">
+      <div className="bg-white rounded-3xl p-8 md:p-10 shadow-xl border border-slate-200/80 text-left space-y-4 relative overflow-hidden">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary-50 border border-primary-200 text-primary-700 font-bold text-xs uppercase tracking-wider">
+          <Heart className="w-4 h-4 text-accent fill-accent" />
+          Diagnóstico Humano de Bienestar • PULSO-H
         </div>
 
-        <h1 className="font-display text-3xl font-bold text-primary-900 mb-4">
-          {result.profileDescription}
+        <h1 className="font-display text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+          Tu Estado de Bienestar: <span style={{ color: profileColor }} className="underline decoration-accent">{result.profileName}</span>
         </h1>
 
-        <p className="text-primary-600">
-          Tu pulso indica que estás en un momento de {result.profileName.toLowerCase()}.
-          Esto no es un veredicto, es una invitación.
-        </p>
-      </div>
-
-      {/* IRP Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-primary-100 p-8 mb-8">
-        <h2 className="font-display text-2xl font-bold text-primary-900 mb-6">
-          Índice de Riesgo Psicosocial
-        </h2>
-
-        <div className="flex items-center justify-center mb-6">
-          <div className="relative w-48 h-48">
-            <svg viewBox="0 0 100 100" className="w-full h-full">
-              {/* Background circle */}
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                fill="none"
-                stroke="#e2e8f0"
-                strokeWidth="8"
-              />
-              {/* Progress circle */}
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                fill="none"
-                stroke={irpColor}
-                strokeWidth="8"
-                strokeLinecap="round"
-                strokeDasharray={`${(result.irp / 100) * 283} 283`}
-                transform="rotate(-90 50 50)"
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-display text-4xl font-bold" style={{ color: irpColor }}>
-                {result.irp}
-              </span>
-              <span className="text-sm text-primary-500">{result.irpLabel}</span>
-            </div>
-          </div>
-        </div>
-
-        <p className="text-center text-primary-700">
-          {result.irpDescription}
-        </p>
-      </div>
-
-      {/* Dimensions */}
-      <div className="bg-white rounded-2xl shadow-sm border border-primary-100 p-8 mb-8">
-        <h2 className="font-display text-2xl font-bold text-primary-900 mb-6">
-          Dimensiones Evaluadas
-        </h2>
-
-        <div className="space-y-4">
-          {Object.entries(result.dimensions).map(([key, dimension]) => (
-            <div key={key} className="flex items-center gap-4">
-              <div className="w-32 flex-shrink-0">
-                <span className="text-sm font-medium text-primary-700 capitalize">
-                  {key === 'ae' ? 'Agotamiento Emocional' :
-                   key === 'dp' ? 'Despersonalización' :
-                   key === 'rp' ? 'Realización Personal' :
-                   key === 'for' ? 'Factores Organizacionales' :
-                   key === 'cvt' ? 'Conciliación Vida-Trabajo' :
-                   'Resiliencia'}
-                </span>
-              </div>
-              <div className="flex-1">
-                <div className="w-full bg-primary-100 rounded-full h-3">
-                  <div
-                    className="h-3 rounded-full transition-all"
-                    style={{
-                      width: `${dimension.score}%`,
-                      backgroundColor: getIRPZoneColor(
-                        dimension.score <= 25 ? 'verde' :
-                        dimension.score <= 50 ? 'amarilla' :
-                        dimension.score <= 75 ? 'naranja' : 'roja'
-                      ),
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="w-16 text-right">
-                <span className="text-sm font-medium">{Math.round(dimension.score)}%</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* Action Plan */}
       {interventions && (
