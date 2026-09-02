@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Copy, Check, Users, ShieldCheck, Sparkles, BarChart3, AlertCircle, Calendar, Lock } from 'lucide-react';
+import { Building2, Copy, Check, Users, ShieldCheck, Sparkles, BarChart3, AlertCircle, Calendar, Lock, TrendingUp, Download, ShieldAlert, Award, ArrowUpRight } from 'lucide-react';
 import DimensionRadarChart from '../components/dashboard/DimensionRadarChart';
 
 interface CompanyData {
@@ -25,7 +25,6 @@ export const CompanyDashboardPage: React.FC = () => {
     if (stored) {
       setCompany(JSON.parse(stored));
     } else {
-      // Default demo company if directly accessing URL
       const mockCompany: CompanyData = {
         id: 'emp-demo-company-123',
         hash: 'emp-demo-company-123',
@@ -56,7 +55,6 @@ export const CompanyDashboardPage: React.FC = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Mock aggregated company dimension data for 4 respondents
   const aggregatedDimensions = [
     { key: 'energia', label: 'Mi Energía', score: 62 },
     { key: 'conexion', label: 'Mi Conexión', score: 74 },
@@ -69,7 +67,7 @@ export const CompanyDashboardPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 pt-24 font-sans space-y-8">
       {/* Header Banner */}
-      <div className="bg-white rounded-3xl p-8 md:p-10 shadow-xl border border-slate-200/80 space-y-4">
+      <div className="bg-white rounded-3xl p-8 md:p-10 shadow-xl border border-slate-200/80 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-6">
           <div className="space-y-1">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 text-primary-700 text-xs font-bold uppercase tracking-wider">
@@ -119,12 +117,41 @@ export const CompanyDashboardPage: React.FC = () => {
             />
             <button
               onClick={handleCopy}
-              className="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 flex-shrink-0"
+              className="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 flex-shrink-0 cursor-pointer"
             >
               {copied ? <Check className="w-4 h-4 text-accent" /> : <Copy className="w-4 h-4" />}
               <span>{copied ? '¡Enlace Copiado!' : 'Copiar Enlace'}</span>
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* HR Executive KPI Highlights Bar */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-1">
+          <span className="text-[11px] font-bold text-slate-400 uppercase font-mono">Índice IRP Organizacional</span>
+          <div className="text-2xl font-black text-amber-600 font-mono">56% <span className="text-xs font-normal text-slate-500 font-sans">(Moderado)</span></div>
+          <p className="text-[11px] text-slate-500">Nivel de desgaste controlado en zona de alerta preventiva.</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-1">
+          <span className="text-[11px] font-bold text-slate-400 uppercase font-mono">Benchmark Sectorial ({company.sector})</span>
+          <div className="text-2xl font-black text-emerald-600 font-mono flex items-center gap-1">
+            +8.2% <TrendingUp className="w-4 h-4" />
+          </div>
+          <p className="text-[11px] text-slate-500">Tu equipo supera la media en resiliencia vs competidores.</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-1">
+          <span className="text-[11px] font-bold text-slate-400 uppercase font-mono">Palanca de Retención</span>
+          <div className="text-2xl font-black text-primary-600 font-mono">81%</div>
+          <p className="text-[11px] text-slate-500">Alta identificación con el propósito y misión del rol.</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-1">
+          <span className="text-[11px] font-bold text-slate-400 uppercase font-mono">Punto de Atención Prioritaria</span>
+          <div className="text-2xl font-black text-red-500 font-mono">49%</div>
+          <p className="text-[11px] text-slate-500">Falta de desconexión digital al finalizar la jornada.</p>
         </div>
       </div>
 
@@ -147,12 +174,10 @@ export const CompanyDashboardPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          {/* Radar Chart Component */}
           <div className="flex justify-center p-4 bg-slate-50/60 rounded-2xl border border-slate-100">
             <DimensionRadarChart dimensions={aggregatedDimensions} size={340} />
           </div>
 
-          {/* Aggregated Dimension Health Cards */}
           <div className="space-y-4">
             <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-2">
               <div className="flex items-center justify-between">
@@ -181,14 +206,110 @@ export const CompanyDashboardPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Premium Features & Conversion Gateways */}
+      <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200/80 space-y-6">
+        <div className="border-b border-slate-100 pb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/15 text-primary-900 text-xs font-bold uppercase tracking-wider mb-1">
+            <Sparkles className="w-3.5 h-3.5 text-accent" />
+            Funcionalidades Avanzadas de Gestión B2B
+          </div>
+          <h2 className="font-display text-2xl font-bold text-slate-900">
+            Herramientas Premium para la Dirección de RRHH
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Premium Feature 1: Filter by Department */}
+          <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200/80 space-y-3 relative overflow-hidden group">
+            <div className="flex items-center justify-between">
+              <div className="p-2.5 bg-primary-100 rounded-xl text-primary-900">
+                <BarChart3 className="w-5 h-5" />
+              </div>
+              <span className="flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full font-mono">
+                <Lock className="w-3 h-3" /> Premium
+              </span>
+            </div>
+
+            <h3 className="font-bold text-slate-900 text-base">Segmentación por Áreas</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Filtra los resultados por Tecnología, Operaciones, Ventas o Seniority para identificar focos de burnout especificos.
+            </p>
+
+            <a
+              href="https://acrux.life/agendar"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center text-xs font-bold text-primary-700 hover:text-primary-900 pt-2"
+            >
+              <span>Desbloquear en Plan Enterprise</span>
+              <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
+            </a>
+          </div>
+
+          {/* Premium Feature 2: PDF Executive C-Suite Report */}
+          <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200/80 space-y-3 relative overflow-hidden group">
+            <div className="flex items-center justify-between">
+              <div className="p-2.5 bg-emerald-100 rounded-xl text-emerald-900">
+                <Download className="w-5 h-5" />
+              </div>
+              <span className="flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full font-mono">
+                <Lock className="w-3 h-3" /> Premium
+              </span>
+            </div>
+
+            <h3 className="font-bold text-slate-900 text-base">Informe para Junta Directiva</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Descarga una presentación lista en PDF con métricas ejecutivas, benchmarks de industria y plan estratégico de clima.
+            </p>
+
+            <a
+              href="https://acrux.life/agendar"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center text-xs font-bold text-primary-700 hover:text-primary-900 pt-2"
+            >
+              <span>Solicitar Demo de Informe C-Suite</span>
+              <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
+            </a>
+          </div>
+
+          {/* Premium Feature 3: Expand Evaluation Seats */}
+          <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200/80 space-y-3 relative overflow-hidden group">
+            <div className="flex items-center justify-between">
+              <div className="p-2.5 bg-amber-100 rounded-xl text-amber-900">
+                <Users className="w-5 h-5" />
+              </div>
+              <span className="flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full font-mono">
+                <Lock className="w-3 h-3" /> Ampliación
+              </span>
+            </div>
+
+            <h3 className="font-bold text-slate-900 text-base">Ampliación de Enlaces (+50)</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Amplía el cupo a 50, 100 o ilimitados colaboradores con seguimiento trimestral continuo de evolución de clima.
+            </p>
+
+            <a
+              href="https://acrux.life/agendar"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center text-xs font-bold text-primary-700 hover:text-primary-900 pt-2"
+            >
+              <span>Consultar Licencia Corporativa</span>
+              <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
+            </a>
+          </div>
+        </div>
+      </div>
+
       {/* Upgrade & Consultation CTA */}
       <div className="bg-gradient-to-br from-[#0D111A] via-[#1B2A4A] to-[#0D111A] text-white rounded-3xl p-8 sm:p-10 shadow-2xl border border-accent/30 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="space-y-2 text-center md:text-left">
           <span className="px-3 py-1 rounded-full bg-accent/20 text-accent border border-accent/30 font-bold text-xs uppercase tracking-wider">
             Transformación Organizacional ACRUX
           </span>
-          <h3 className="text-xl sm:text-2xl font-bold font-display text-white">¿Necesitás evaluar más de 10 colaboradores?</h3>
-          <p className="text-xs sm:text-sm text-slate-300">Desbloqueá diagnósticos grupales ilimitados, segmentación por áreas y taller de liderazgo con especialistas.</p>
+          <h3 className="text-xl sm:text-2xl font-bold font-display text-white">¿Querés presentar estos hallazgos a tu comité ejecutivo?</h3>
+          <p className="text-xs sm:text-sm text-slate-300">Agendá una sesión de consultoría estratégica de 30 minutos con los expertos de ACRUX.</p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
