@@ -6,6 +6,7 @@ import { getProfileColor } from '../utils/assessmentEngine';
 import { Heart, Sparkles, User, Activity } from 'lucide-react';
 import { trackResultsView } from '../utils/analytics';
 import DimensionRadarChart from '../components/dashboard/DimensionRadarChart';
+import InteractiveRecommendations from '../components/results/InteractiveRecommendations';
 
 const PDFReportGenerator = lazy(() => import('../components/pdf/PDFReportGenerator'));
 
@@ -193,33 +194,9 @@ const ResultsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Holistic Recommendations & Action Plan */}
+      {/* Holistic Recommendations & Action Plan (Interactive GUI) */}
       {interventions && (
-        <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200/80 space-y-6">
-          <h2 className="font-display text-2xl font-bold text-slate-900">
-            Recomendaciones para tu Bienestar Integrado
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-primary-50/60 rounded-2xl p-6 border border-primary-100 space-y-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-primary-700 font-mono">Acción Inmediata (Semana 1)</span>
-              <h3 className="font-bold text-slate-900 text-base">{interventions.immediate.title}</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">{interventions.immediate.description}</p>
-            </div>
-
-            <div className="bg-amber-50/60 rounded-2xl p-6 border border-amber-100 space-y-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-700 font-mono">Hábitos a Corto Plazo (Mes 1)</span>
-              <h3 className="font-bold text-slate-900 text-base">{interventions.short.title}</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">{interventions.short.description}</p>
-            </div>
-
-            <div className="bg-emerald-50/60 rounded-2xl p-6 border border-emerald-100 space-y-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 font-mono">Sostenibilidad (Trimestral)</span>
-              <h3 className="font-bold text-slate-900 text-base">{interventions.medium.title}</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">{interventions.medium.description}</p>
-            </div>
-          </div>
-        </div>
+        <InteractiveRecommendations interventions={interventions} />
       )}
 
       {/* PDF Download & Executive Consultation CTAs */}

@@ -26,7 +26,8 @@ const dimensionLabels: Record<string, string> = {
 
 async function loadLogoImage(): Promise<{ dataUrl: string; width: number; height: number } | null> {
   try {
-    const response = await fetch('./logo.png');
+    const response = await fetch('/logo.png');
+    if (!response.ok) return null;
     const blob = await response.blob();
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -43,6 +44,7 @@ async function loadLogoImage(): Promise<{ dataUrl: string; width: number; height
         img.onerror = () => resolve(null);
         img.src = dataUrl;
       };
+      reader.onerror = () => resolve(null);
       reader.readAsDataURL(blob);
     });
   } catch {
