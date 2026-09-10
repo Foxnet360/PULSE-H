@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Building2, Copy, Check, Users, ShieldCheck, Sparkles, BarChart3, AlertCircle, Calendar, Lock, TrendingUp, Download, ShieldAlert, Award, ArrowUpRight } from 'lucide-react';
+import { Building2, Copy, Check, Users, ShieldCheck, Sparkles, BarChart3, Calendar, Lock, TrendingUp, Download, ArrowUpRight } from 'lucide-react';
 import DimensionRadarChart from '../components/dashboard/DimensionRadarChart';
 
 interface CompanyData {
@@ -15,10 +14,9 @@ interface CompanyData {
 }
 
 export const CompanyDashboardPage: React.FC = () => {
-  const navigate = useNavigate();
   const [company, setCompany] = useState<CompanyData | null>(null);
   const [copied, setCopied] = useState(false);
-  const [respondentsCount, setRespondentsCount] = useState(4); // Demo 4 out of 10 completed
+  const [respondentsCount] = useState(4); // Demo 4 out of 10 completed
 
   useEffect(() => {
     const stored = localStorage.getItem('pulso-h-company-dashboard');

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Shield, Lock, CheckCircle2, Mail, ExternalLink } from 'lucide-react';
 
 export default function FunnelFooter() {

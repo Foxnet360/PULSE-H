@@ -38,19 +38,24 @@ const ResultsPage: React.FC = () => {
     const isDemo = window.location.hash === '#demo';
 
     if (isDemo) {
+      const demoDims = {
+        ae: { score: 76, rawScore: 27, level: 'alto' as const, label: 'Agotamiento Alto', description: 'Fatiga emocional elevada por exigencia sostenida.' },
+        dp: { score: 64, rawScore: 19, level: 'moderado' as const, label: 'Cinismo Moderado', description: 'Desconexión y distanciamiento moderados del trabajo.' },
+        rp: { score: 82, rawScore: 29, level: 'bajo' as const, label: 'Realización Alta', description: 'Sentido de propósito y logro bien conservados.' },
+        for: { score: 70, rawScore: 70, level: 'moderado' as const, label: 'Moderado', description: 'Factores Organizacionales: Nivel adecuado' },
+        cvt: { score: 56, rawScore: 56, level: 'moderado' as const, label: 'Moderado', description: 'Conciliación Vida-Trabajo: Nivel adecuado' },
+        rri: { score: 78, rawScore: 78, level: 'alto' as const, label: 'Alto', description: 'Recursos de Resiliencia: Necesita atención' },
+      };
       const mockResult: AssessmentResult = {
         id: 'demo-result-123',
         timestamp: new Date(),
-        dimensions: {
-          energia: { score: 3.8, percentage: 76, level: 'Agotamiento Alto' },
-          conexion: { score: 3.2, percentage: 64, level: 'Cinismo Moderado' },
-          proposito: { score: 4.1, percentage: 82, level: 'Realización Alta' },
-          entorno: { score: 3.5, percentage: 70, level: 'Carga Elevada' },
-          equilibrio: { score: 2.8, percentage: 56, level: 'Falta de Desconexión' },
-          fortaleza: { score: 3.9, percentage: 78, level: 'Resiliencia Buena' },
-        },
+        dimensions: demoDims,
+        subscales: { ae: demoDims.ae, dp: demoDims.dp, rp: demoDims.rp },
+        customDimensions: { for: demoDims.for, cvt: demoDims.cvt, rri: demoDims.rri },
         irp: 58,
         irpZone: 'naranja',
+        irpLabel: 'En Alerta',
+        irpDescription: 'Sientes fatiga acumulada y desconexión inicial. Es importante tomar acciones preventivas ahora.',
         profile: 'requete',
         profileName: 'En Alerta',
         profileDescription: 'Sientes fatiga acumulada y desconexión inicial. Es importante tomar acciones preventivas ahora.',
@@ -104,7 +109,7 @@ const ResultsPage: React.FC = () => {
   const radarDimensions = Object.entries(result.dimensions).map(([key, dim]) => ({
     key,
     label: dimensionLabels[key] ? dimensionLabels[key].split(' (')[0] : key,
-    score: dim.score !== undefined ? (dim.score <= 5 ? Math.round((dim.score / 5) * 100) : dim.score) : dim.percentage || 60,
+    score: dim.score <= 5 ? Math.round((dim.score / 5) * 100) : dim.score,
   }));
 
   return (
@@ -172,7 +177,7 @@ const ResultsPage: React.FC = () => {
           <div className="space-y-4">
             {Object.entries(result.dimensions).map(([key, dimension]) => {
               const label = dimensionLabels[key] || dimensionLabels[key.toLowerCase()] || key;
-              const val = dimension.score !== undefined ? (dimension.score <= 5 ? Math.round((dimension.score / 5) * 100) : dimension.score) : dimension.percentage || 60;
+              const val = dimension.score <= 5 ? Math.round((dimension.score / 5) * 100) : dimension.score;
               const statusColor = val >= 70 ? 'bg-emerald-500' : val >= 50 ? 'bg-amber-500' : 'bg-red-500';
 
               return (

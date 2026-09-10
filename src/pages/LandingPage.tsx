@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ArrowRight, Clock, Shield, BarChart3, Building2, UserCheck } from 'lucide-react';
+import { Clock, Shield, BarChart3, Building2, UserCheck } from 'lucide-react';
 import { trackLandingView } from '../utils/analytics';
 import HeroSection from '../components/landing/HeroSection';
 import ProfilesSection from '../components/landing/ProfilesSection';

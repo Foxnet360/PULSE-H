@@ -208,7 +208,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({ result }) => {
 
       const tableData = Object.entries(result.dimensions).map(([key, dim]) => {
         const label = dimensionLabels[key] || dimensionLabels[key.toLowerCase()] || key;
-        const val = dim.score !== undefined ? (dim.score <= 5 ? Math.round((dim.score / 5) * 100) : dim.score) : dim.percentage || 60;
+        const val = dim.score <= 5 ? Math.round((dim.score / 5) * 100) : dim.score;
         const status = val >= 70 ? 'Fortaleza' : val >= 50 ? 'En Equilibrio' : 'Cuidado Requerido';
         return [label, `${val}%`, status];
       });

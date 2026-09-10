@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Sparkles, Shield, HeartHandshake, CheckCircle, ArrowRight, Zap, Target, ShieldCheck } from 'lucide-react';
+import { Sparkles, CheckCircle, Zap, Target, ShieldCheck } from 'lucide-react';
 import { Intervention } from '../../types/assessment';
 
 interface ExecutiveRecommendationsProps {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Building2, User, Mail, Sparkles, Shield, ArrowRight } from 'lucide-react';
+import { X, Building2, User, Mail, Shield, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface CompanyRegistrationModalProps {
