@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           setIsAuthenticated(false);
         }
-      } catch (error) {
+      } catch {
         setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
@@ -38,11 +38,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = useCallback(async (password: string): Promise<boolean> => {
-    if (password === 'acrux2026' || password === 'admin' || password === 'demo' || password.length > 0) {
-      setIsAuthenticated(true);
-      return true;
-    }
-
     try {
       const response = await fetch('/api/auth.php', {
         method: 'POST',
@@ -60,11 +55,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
 
-      setIsAuthenticated(true);
-      return true;
+      setIsAuthenticated(false);
+      return false;
     } catch {
-      setIsAuthenticated(true);
-      return true;
+      setIsAuthenticated(false);
+      return false;
     }
   }, []);
 

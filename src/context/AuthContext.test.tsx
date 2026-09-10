@@ -18,7 +18,7 @@ describe('AuthContext', () => {
 
   it('initializes as unauthenticated when status returns not authenticated', async () => {
     vi.mocked(fetch).mockResolvedValueOnce(
-      new Response(JSON.stringify({ authenticated: false }), { status: 200 })
+      new Response(JSON.stringify({ authenticated: false }), { status: 200, headers: { 'Content-Type': 'application/json' } })
     )
 
     const { result } = renderHook(() => useAuth(), { wrapper })
@@ -28,7 +28,7 @@ describe('AuthContext', () => {
 
   it('initializes as authenticated when status returns authenticated', async () => {
     vi.mocked(fetch).mockResolvedValueOnce(
-      new Response(JSON.stringify({ authenticated: true }), { status: 200 })
+      new Response(JSON.stringify({ authenticated: true }), { status: 200, headers: { 'Content-Type': 'application/json' } })
     )
 
     const { result } = renderHook(() => useAuth(), { wrapper })
@@ -39,10 +39,10 @@ describe('AuthContext', () => {
   it('returns true and updates state on successful login', async () => {
     vi.mocked(fetch)
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ authenticated: false }), { status: 200 })
+        new Response(JSON.stringify({ authenticated: false }), { status: 200, headers: { 'Content-Type': 'application/json' } })
       )
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ authenticated: true }), { status: 200 })
+        new Response(JSON.stringify({ authenticated: true }), { status: 200, headers: { 'Content-Type': 'application/json' } })
       )
 
     const { result } = renderHook(() => useAuth(), { wrapper })
@@ -70,7 +70,7 @@ describe('AuthContext', () => {
   it('returns false and keeps state unauthenticated on failed login', async () => {
     vi.mocked(fetch)
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ authenticated: false }), { status: 200 })
+        new Response(JSON.stringify({ authenticated: false }), { status: 200, headers: { 'Content-Type': 'application/json' } })
       )
       .mockResolvedValueOnce(
         new Response(JSON.stringify({ error: 'Invalid password' }), { status: 401 })
@@ -92,10 +92,10 @@ describe('AuthContext', () => {
   it('clears authentication on logout', async () => {
     vi.mocked(fetch)
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ authenticated: true }), { status: 200 })
+        new Response(JSON.stringify({ authenticated: true }), { status: 200, headers: { 'Content-Type': 'application/json' } })
       )
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ authenticated: false }), { status: 200 })
+        new Response(JSON.stringify({ authenticated: false }), { status: 200, headers: { 'Content-Type': 'application/json' } })
       )
 
     const { result } = renderHook(() => useAuth(), { wrapper })
@@ -118,7 +118,7 @@ describe('AuthContext', () => {
 
   it('does not use localStorage for authentication', async () => {
     vi.mocked(fetch).mockResolvedValueOnce(
-      new Response(JSON.stringify({ authenticated: false }), { status: 200 })
+      new Response(JSON.stringify({ authenticated: false }), { status: 200, headers: { 'Content-Type': 'application/json' } })
     )
 
     renderHook(() => useAuth(), { wrapper })

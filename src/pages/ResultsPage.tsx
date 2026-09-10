@@ -1,5 +1,5 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AssessmentResult, Intervention } from '../types/assessment';
 import { getRecommendedInterventions } from '../data/interventionData';
 import { getProfileColor } from '../utils/assessmentEngine';
@@ -216,15 +216,13 @@ const ResultsPage: React.FC = () => {
             <PDFReportGenerator result={result} />
           </Suspense>
 
-          <a
-            href="https://acrux.life/agendar"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/agendar"
             className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-accent text-primary-900 font-bold text-xs sm:text-sm rounded-xl hover:bg-accent-dark transition-all shadow-md"
           >
             <User className="w-4 h-4" />
-            <span>Agendar Sesión de Consultoría</span>
-          </a>
+            <span>Agendar Ahora</span>
+          </Link>
         </div>
       </div>
     </div>
