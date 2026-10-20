@@ -154,14 +154,14 @@ const AdminPage: React.FC = () => {
         const stored = localStorage.getItem('pulso-h-leads');
         if (stored) {
           const parsed = JSON.parse(stored);
-          const localLeads: Lead[] = parsed.map((l: any, idx: number) => ({
-            id: l.backendId || idx + 1,
-            email: l.email,
-            name: l.email.split('@')[0],
-            profile: l.profile || 'Resiliente',
-            score: l.irp || l.score || 45,
-            status: 'Completado',
-            created_at: new Date(l.createdAt || Date.now()).toISOString().split('T')[0],
+          const localLeads: Lead[] = parsed.map((l: Record<string, unknown>, idx: number) => ({
+            id: Number(l.backendId) || idx + 1,
+            email: String(l.email || ''),
+            name: String(l.name || (typeof l.email === 'string' ? l.email.split('@')[0] : 'Usuario')),
+            profile: (typeof l.profile === 'string' ? l.profile : 'Resiliente') as Lead['profile'],
+            score: Number(l.irp || l.score || 45),
+            status: 'Completado' as const,
+            created_at: new Date(Number(l.createdAt) || Date.now()).toISOString().split('T')[0],
           }));
           setLeads(localLeads);
           setHotLeads(localLeads.filter(l => l.score > 50));

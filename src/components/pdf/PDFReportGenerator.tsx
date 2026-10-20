@@ -109,7 +109,9 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({ result }) => {
 
       // Footer renderer
       const addFooters = () => {
-        const totalPages = (doc.internal as any).getNumberOfPages();
+        const totalPages = typeof doc.getNumberOfPages === 'function'
+          ? doc.getNumberOfPages()
+          : (doc.internal as unknown as { getNumberOfPages: () => number }).getNumberOfPages();
         for (let i = 1; i <= totalPages; i++) {
           doc.setPage(i);
           doc.setDrawColor(BORDER[0], BORDER[1], BORDER[2]);
@@ -213,14 +215,14 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({ result }) => {
         return [label, `${val}%`, status];
       });
 
-      const runAutoTable = (options: any) => {
+      const runAutoTable = (options: Record<string, unknown>) => {
         try {
           if (typeof autoTable === 'function') {
             autoTable(doc, options);
-          } else if (typeof (doc as any).autoTable === 'function') {
-            (doc as any).autoTable(options);
-          } else if (typeof (autoTable as any)?.default === 'function') {
-            (autoTable as any).default(doc, options);
+          } else if (typeof (doc as unknown as { autoTable?: (opts: unknown) => void }).autoTable === 'function') {
+            (doc as unknown as { autoTable: (opts: unknown) => void }).autoTable(options);
+          } else if (typeof (autoTable as unknown as { default?: (d: unknown, opts: unknown) => void })?.default === 'function') {
+            (autoTable as unknown as { default: (d: unknown, opts: unknown) => void }).default?.(doc, options);
           }
         } catch (err) {
           console.warn('autoTable invocation fallback:', err);
@@ -252,7 +254,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({ result }) => {
           1: { halign: 'center', cellWidth: 35 },
           2: { halign: 'center', cellWidth: 53, fontStyle: 'bold' },
         },
-        didParseCell: (dataCell: any) => {
+        didParseCell: (dataCell: { section: string; column: { index: number }; cell: { raw: unknown; styles: { textColor: number[] } } }) => {
           if (dataCell.section === 'body' && dataCell.column.index === 2) {
             const text = String(dataCell.cell.raw);
             if (text === 'Cuidado Requerido') {
